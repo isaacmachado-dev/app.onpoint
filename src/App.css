@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-main: #25586A;
+  --color-brand-secondary: #ACEBF0;
+  --color-brand-background: #E4F6FB;
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -17,13 +23,6 @@
   -webkit-text-size-adjust: 100%;
 }
 
-html, body, #root {
-  /* Substituímos 'transparent' por rgba puro para não haver confusão no WebKitGTK (Linux) */
-  background-color: #E4F6FB !important;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 
 .container {
   margin: 0;

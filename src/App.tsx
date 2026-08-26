@@ -13,7 +13,7 @@ function App() {
 
   return (
     // Trocamos 'container' por 'w-full' para ocupar 100% da largura da janela
-    <main className="w-full h-screen text-black">
+    <main className="w-full h-screen text-black bg-brand-background">
 
       <div className="flex w-full flex-row items-start justify-between">
         <div>
@@ -22,7 +22,7 @@ function App() {
               src="/onpoint.svg"
               alt="onPoint Logo"
             />
-            <h1 className="text-2xl font-bold">onPoint</h1>
+            <h1 className="text-lg font-bold">onPoint</h1>
           </div>
         </div>
 
@@ -35,6 +35,21 @@ function App() {
         >
           <X className="text-black" />
         </button>
+      </div>
+
+      <div className="flex-1">
+          <h1 className="text-3xl font-bold">14:00</h1>
+      </div>
+
+      <div className="bg-[#ACEBF0] p-10 rounded-full max-w-[10px] mx-auto">
+
+      </div>
+
+      <div className="flex gap-30 bg-[#ACEBF0] mt-2 w-full h-2 mx-auto">
+        <span className="rounded-full h-2 w-2 bg-brand-main"></span>
+        <span className="rounded-full h-2 w-2 bg-brand-main"></span>
+        <span className="rounded-full h-2 w-2 bg-brand-main"></span>
+        <span className="rounded-full h-2 w-2 bg-brand-main"></span>
       </div>
 
     </main>
