@@ -1,4 +1,4 @@
-# onPoint ⏱️
+# onPoint 
 
 > Bata o ponto no horário certo. Sem esquecer.
 
@@ -78,9 +78,9 @@ src-tauri/
 
 | Fase | Escopo                                        | Status |
 | ---- | --------------------------------------------- | ------ |
-| 1    | Setup Tauri + janela transparente + mock      | ✅     |
-| 2    | UI azul Material, liquid gauge, calendário    | 🚧     |
-| 3    | Lembretes, abertura do site, integração WA    | ⬜     |
+- [ ] | 1    | Setup Tauri + janela transparente + mock      
+- [ ] | 2    | UI azul Material, liquid gauge, calendário        
+- [ ] | 3    | Lembretes, abertura do site, integração WA        
 
 ---
 
