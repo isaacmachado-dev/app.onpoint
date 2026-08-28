@@ -1,8 +1,19 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
 import { ToggleCard } from "./ToggleCard";
 
 export default function ConfigurationComponent() {
     const [ativo, setAtivo] = useState(false);
+
+    const fecharJanela = async () => {
+        try {
+        const appWindow = getCurrentWindow();
+        // hide() esconde a janela mas mantém o relógio rodando no sistema
+        await appWindow.close(); 
+        } catch (error) {
+        console.error("Failed to hide window:", error);
+        }
+    };
     
     return (
 
@@ -18,10 +29,14 @@ export default function ConfigurationComponent() {
                     />
                     </div>
                 </div>
+
+                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={0}>
+                    <h3 className="text-black">Definir horário</h3>
+                </button>
                 
-                <div className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row">
-                    <h3>Fechar completamente</h3>
-                </div>
+                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={fecharJanela}>
+                    <h3 className="text-black">Fechar completamente</h3>
+                </button>
 
             </div>
         </>
