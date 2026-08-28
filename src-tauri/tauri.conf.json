@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "onPoint",
-        "width": 400,
-        "height": 300,
+        "width": 500,
+        "height": 400,
         "resizable": false,
         "decorations": false,
         "transparent": true,

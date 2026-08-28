@@ -2,8 +2,8 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Calendar, ScanFace, Settings, X } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
-
-const appWindow = getCurrentWindow();
+import CalendarComponent from "./components/Calendar";
+import Point from "./components/Point";
 
 type View = "ponto" | "calendario" | "configuracoes";
 
@@ -11,8 +11,13 @@ function App() {
   const [currentView, setCurrentView] = useState<View>("ponto");
 
   const fecharJanela = async () => {
-    // hide() esconde a janela mas mantém o relógio rodando no sistema
-    await appWindow.hide(); 
+    try {
+      const appWindow = getCurrentWindow();
+      // hide() esconde a janela mas mantém o relógio rodando no sistema
+      await appWindow.hide(); 
+    } catch (error) {
+      console.error("Failed to hide window:", error);
+    }
   };
 
   return (
@@ -42,34 +47,15 @@ function App() {
       {/* Conteúdo Central alternável de acordo com a aba ativa */}
       <div className="flex-1 flex flex-col items-center justify-center px-4">
         {currentView === "ponto" && (
-          <div className="w-full flex flex-col items-center">
-            <h1 className="text-3xl font-bold">14:00</h1>
-
-            <div className="bg-[#ACEBF0] p-10 rounded-full max-w-[10px] mx-auto my-3"></div>
-
-            <div className="flex gap-4 bg-[#ACEBF0] mt-2 w-48 h-2 mx-auto justify-between px-2 items-center rounded-full">
-              <span className="rounded-full h-2 w-2 bg-brand-main"></span>
-              <span className="rounded-full h-2 w-2 bg-brand-main"></span>
-              <span className="rounded-full h-2 w-2 bg-brand-main"></span>
-              <span className="rounded-full h-2 w-2 bg-brand-main"></span>
-            </div>
-          </div>
+          <Point />
         )}
 
         {currentView === "calendario" && (
-          <div className="flex flex-col items-center justify-center text-center">
-            <Calendar className="w-10 h-10 text-brand-main mb-2" />
-            <h2 className="text-2xl font-bold text-brand-main">Calendário</h2>
-            <p className="text-xs text-gray-600 mt-1">Visão do calendário de batidas em breve...</p>
-          </div>
+          <CalendarComponent />
         )}
 
         {currentView === "configuracoes" && (
-          <div className="flex flex-col items-center justify-center text-center">
-            <Settings className="w-10 h-10 text-brand-main mb-2" />
-            <h2 className="text-2xl font-bold text-brand-main">Configurações</h2>
-            <p className="text-xs text-gray-600 mt-1">Ajustes e horários em breve...</p>
-          </div>
+          
         )}
       </div>
 
@@ -86,7 +72,11 @@ function App() {
           aria-label="Ponto"
           title="Ponto"
         >
-          <ScanFace className="w-5 h-5" />
+          <ScanFace
+            strokeWidth={2}
+            className={`w-5 h-5 text-brand-main 
+            ${currentView === "ponto" ? "text-white" : "text-brand-main"}`} 
+          />
         </button>
 
         <button
@@ -94,13 +84,17 @@ function App() {
           onClick={() => setCurrentView("calendario")}
           className={`flex items-center justify-center p-2 rounded-full transition-all duration-200 cursor-pointer ${
             currentView === "calendario"
-              ? "bg-brand-main text-white shadow-sm"
-              : "text-brand-main hover:bg-brand-main/10"
+              ? "bg-brand-main shadow-sm"
+              : " hover:bg-brand-main/10"
           }`}
           aria-label="Calendário"
           title="Calendário"
         >
-          <Calendar className="w-5 h-5" />
+          <Calendar
+            strokeWidth={2}
+            className={`w-5 h-5 text-brand-main 
+            ${currentView === "calendario" ? "text-white" : "text-brand-main"}`} 
+          />
         </button>
 
         <button
@@ -114,7 +108,11 @@ function App() {
           aria-label="Configurações"
           title="Configurações"
         >
-          <Settings className="w-5 h-5" />
+          <Settings 
+            strokeWidth={2}
+            className={`w-5 h-5 text-brand-main 
+            ${currentView === "configuracoes" ? "text-white" : "text-brand-main"}`} 
+          />
         </button>
       </nav>
 
