@@ -3,6 +3,7 @@ import { Calendar, ScanFace, Settings, X } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
 import CalendarComponent from "./components/Calendar";
+import ConfigurationComponent from "./components/Configuration";
 import Point from "./components/Point";
 
 type View = "ponto" | "calendario" | "configuracoes";
@@ -55,7 +56,7 @@ function App() {
         )}
 
         {currentView === "configuracoes" && (
-          
+          <ConfigurationComponent />
         )}
       </div>
 
