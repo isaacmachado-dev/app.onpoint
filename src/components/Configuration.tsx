@@ -30,7 +30,7 @@ export default function ConfigurationComponent() {
                     </div>
                 </div>
 
-                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={0}>
+                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={() => alert("Função de definir horário ainda não implementada")}>
                     <h3 className="text-black">Definir horário</h3>
                 </button>
                 
