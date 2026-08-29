@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e [SemVer](https://semver.org/lang/pt-BR/).
 
+## v0.1.1
+
+[compare changes](https://github.com/isaacmachado-dev/app.onpoint/compare/v0.2.0...v0.1.1)
+
 ## [0.1.0] — 2026-08-25
 
 ### Adicionado
