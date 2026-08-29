@@ -10,10 +10,6 @@ O **onPoint** foi concebido para resolver o problema clássico do esquecimento d
 
 ---
 
-## Horizonte de Versões
-
----
-
 ## ROADMAP do projeto
 
 | Módulo | Versão | Status | Próximo Grande Marco |
