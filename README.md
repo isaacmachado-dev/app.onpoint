@@ -78,8 +78,8 @@ src-tauri/
 
 | Fase | Escopo                                        | Status |
 | ---- | --------------------------------------------- | ------ |
-- [ ] | 1    | Setup Tauri + janela transparente + mock      
-- [ ] | 2    | UI azul Material, liquid gauge, calendário        
+- [X] | 1    | Setup Tauri + janela transparente + mock      
+- [X] | 2    | UI azul Material, liquid gauge, configurações        
 - [ ] | 3    | Lembretes, abertura do site, integração WA        
 
 ---
