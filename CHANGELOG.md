@@ -1,13 +1,28 @@
-# Changelog
+## [0.2.0] - 2026-08-29
 
-All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+### 🚀 Features
 
-## [0.1.2](https://github.com///compare/v0.1.1...v0.1.2) (2026-08-29)
-## [0.1.0] — 2026-08-25
+- Update calendar and settings descriptions to indicate upcoming features
+- Component liquid
+- Add ConfigurationComponent and ToggleCard for user settings
+- Adjusting first view of config and window
+- Implement alert for 'Definir horário' button in ConfigurationComponent
+- Refactor app structure and implement new UI components
 
-### Adicionado
-- Scaffold Tauri 2 + Vite + React 19 + TypeScript + Tailwind CSS 4
-- Janela widget: 400×300, transparente, sem decorações nativas
-- Header com logo onPoint e botão fechar (esconde a janela)
-- Script `tauri:arch` com flags Wayland (`WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11`)
-- Documentação inicial (README, SPEC, CHANGELOG)
+## [0.1.2] - 2026-08-29
+
+### ⚙️ Miscellaneous Tasks
+- *(release)* 0.1.2
+
+## [0.1.1] - 2026-08-29
+- *(release)* V0.1.1
+
+### ⚙️ Miscellaneous Tasks
+
+## [0.0.1] - 2026-08-26
+
+### 🚀 Features
+
+- First commit
+- Settup mockup design
+- Navigation to change the view
