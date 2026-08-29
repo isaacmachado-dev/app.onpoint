@@ -138,7 +138,7 @@ export default function PageConfiguration() {
               <button
                 type="button"
                 onClick={handleAddNewSchedule}
-                className="text-xs font-semibold text-brand-main bg-brand-background hover:bg-brand-secondary/40 py-3 px-4 rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold text-brand-main bg-brand-background hover:bg-brand-secondary/50 py-3 px-4 rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                 Adicionar horário de expediente
