@@ -22,8 +22,16 @@ export const DAYS_OF_WEEK: DayOfWeek[] = [
   { id: "sab", short: "Sáb", full: "Sábado" },
 ]
 
-const ModalDatePicker = () => {
-  const [selectedDays, setSelectedDays] = useState<string[]>([
+export interface ModalDatePickerProps {
+  selectedDays?: string[];
+  onChange?: (days: string[]) => void;
+}
+
+const ModalDatePicker = ({
+  selectedDays: controlledDays,
+  onChange,
+}: ModalDatePickerProps) => {
+  const [internalDays, setInternalDays] = useState<string[]>([
     "seg",
     "ter",
     "qua",
@@ -31,13 +39,19 @@ const ModalDatePicker = () => {
     "sex",
   ])
 
+  const selectedDays = controlledDays ?? internalDays
+
   const toggleDay = (dayId: string) => {
-    setSelectedDays((prev) =>
-      prev.includes(dayId) ? prev.filter((id) => id !== dayId) : [...prev, dayId]
-    )
+    const updated = selectedDays.includes(dayId)
+      ? selectedDays.filter((id) => id !== dayId)
+      : [...selectedDays, dayId]
+
+    if (onChange) {
+      onChange(updated)
+    } else {
+      setInternalDays(updated)
+    }
   }
-
-
 
   const getButtonLabel = () => {
     if (selectedDays.length === 0) return "Selecionar dias"
@@ -74,8 +88,7 @@ const ModalDatePicker = () => {
           </Button>
         }
       />
-      <PopoverContent align="start" className="w-[280px] p-3 rounded-2xl shadow-xl bg-white">
-
+      <PopoverContent align="start" className="z-[120] w-[280px] p-3 rounded-2xl shadow-xl bg-white border border-gray-100">
         {/* Botões dos Dias da Semana */}
         <div className="grid grid-cols-7 gap-1">
           {DAYS_OF_WEEK.map((day) => {
@@ -99,11 +112,10 @@ const ModalDatePicker = () => {
             )
           })}
         </div>
-
-       
       </PopoverContent>
     </Popover>
   )
 }
 
 export default ModalDatePicker
+

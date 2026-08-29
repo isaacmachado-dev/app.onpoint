@@ -1,144 +1,56 @@
-# Onpoint Design System
+# onPoint — Design System
 
-## Overview
-
-Design system do projeto Onpoint, auditado contra o arquivo Figma real
-(`7chQ1nVn4WMA3ySoq18bdn`, página "Main", 12 root nodes) em 2026-08-25.
-Valores extraídos do arquivo estão marcados como **[extraído]**; valores
-inferidos/propostos (não presentes no Figma) estão marcados como **[proposto]**.
-O draft original gerado pelo plugin misturava os dois sem distinção — este
-documento corrige isso.
+> **Versão:** 2.0 · **Referência:** Inspiração no Material Expressss 3 / Google
 
 ---
 
-## Colors
+## 🎨 Paleta de Cores
 
-### Extraídas do Figma
-
-| Token        | Hex       | Uso observado no arquivo |
-|--------------|-----------|--------------------------|
-| `primary`    | `#25586A` | Cor dominante: 14 fills + 21 strokes. Usada em contornos e destaques. |
-| `accent`     | `#ACEBF0` | Segunda mais usada (11x). Superfícies de apoio. |
-| `surface`    | `#E4F6FB` | 3x. Painéis/cartões claros. |
-| `background` | `#FFFFFF` | Fundo de página e canvas. |
-| `text`       | `#000000` | Texto principal. |
-| `primary-tint` | `#335C67` | Variação próxima do primary (1 fill). Revisar papel antes de reusar. |
-| `accent-bright` | `#90E0EF` | Tom mais vivo do accent (1x). |
-| `neutral-bg` | `#F6F9FA` | Cinza-azulado muito claro (1x). |
-| Amostras decorativas (ícones/refs lucide): `#FFE5D9`, `#FDE4CF`, `#3D405B`, `#CFBAF0`, `#880D1E` | — | Provavelmente amostras de cor soltas, não parte do sistema. Não usar como tokens sem definir papel. |
-
-### Propostas do plugin (NÃO existem no Figma — definir manualmente antes de usar)
-
-| Token          | Hex proposto | Nota |
-|----------------|--------------|------|
-| `border`       | `#D9D9D9`    | O plugin usou esta cor para todas as bordas, mas no arquivo as bordas reais são `#25586A`. Decidir: bordas cinza neutras ou seguir o traço azul do Figma. |
-| `muted-text`   | `#999999`    | Inventada para texto secundário. |
-| `error`        | `#EF4444`    | Inventada para estados de erro. |
-
-**Recomendação:** bordas seguirem `primary` (`#25586A`) com opacidade reduzida,
-fiel ao desenho; ou padronizar `#D9D9D9` se preferir bordas neutras — mas essa
-é uma decisão de design, não algo já definido no Figma.
+| Token Semântico | Valor Hex | Uso e Aplicação |
+| :--- | :--- | :--- |
+| `--color-brand-main` | `#25586A` | Cor de destaque primária: textos principais, botões primários, anel do gauge, dots concluídos e ícones ativos. |
+| `--color-brand-secondary` | `#ACEBF0` | Cor de realce secundária: contornos ativos, fundo de botões secundários, partículas de água e detalhes contrastantes. |
+| `--color-brand-background` | `#E4F6FB` | Cor de fundo geral do aplicativo e de cards contidos. |
+| `surface-white` | `#FFFFFF` | Fundo de modais, popovers, pílula ativa da navbar e botões brancos. |
+| `status-gold` | `#FFD700` / `#FFA500` | Estrelas de celebração da 4ª batida e badge *"De hoje tá pago"*. |
 
 ---
 
-## Typography
+## 🔤 Tipografia
 
-- Fonte: **Inter**, peso **700** nos textos existentes. [extraído]
-- Nenhum text style publicado no arquivo ("No local text styles found"). [extraído]
-- Headline/body fonts e escala tipográfica: **[manual]** — definir.
-
-Textos presentes no arquivo: "oNpoint" (logo, 3x), "14:00", "Inicializar ao ligar o sistema", "Fechar completamente".
-
----
-
-## Spacing
-
-Base unit: **8px** [proposto — não há auto layouts nem espaçamentos sistematizados no arquivo]
-
-- xs: 4px — gaps inline apertados
-- sm: 8px — espaçamento compacto
-- md: 16px — padding padrão
-- lg: 24px — padding de cards, gutters de seção
-- xl: 32px — espaçamento entre seções maiores
+- **Família Tipográfica Principal:** Inter, `-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, `sans-serif`.
+- **Escala de Tamanhos:**
+  - `text-3xl font-bold`: Relógio principal em tempo real (`PagePoint`).
+  - `text-2xl font-black`: Título do turno ativo no modo tela cheia.
+  - `text-base font-bold`: Logo e cabeçalhos de seções.
+  - `text-xs font-medium / font-bold`: Rótulos de turno, badges e textos de apoio.
+  - `text-[10px] font-bold`: Detalhes secundários, legendas e botões da barra de testes.
 
 ---
 
-## Border Radius
+## 📐 Espaçamento e Raios de Borda
 
-Raios realmente encontrados no arquivo [extraído]:
-0, 3.5, 15, 16, 27, 34.5, 47, 62, 200 — ou seja, **não existe um sistema de
-raios consistente**; os frames parecem ter raios ajustados individualmente
-(200 ≈ pills/círculos, 16 ≈ painéis).
-
-Proposta de normalização [proposto]:
-
-- sm: 4px — tags, chips
-- md: 8px — botões, inputs, cards
-- lg: 16px — painéis grandes (confere com o raio 16 encontrado)
-- full: 9999px — pills, avatares (confere com o raio 200 dos círculos)
+### Raios de Borda (*Border Radius*)
+- **`rounded-full`**: Pílulas de navegação, botões circulares, widget central de água, marcadores de progresso e leitor biométrico.
+- **`rounded-2xl` / `rounded-3xl`**: Cards de escala, containers de configuração e caixas modais.
+- **`rounded-4xl`**: Estrutura externa da janela no arquivo `App.tsx`.
 
 ---
 
-## Elevation [proposto]
+## 💫 Micro-Interações e Animações
 
-Sombras suaves e difusas por padrão:
+### 1. Indicador Deslizante da Navbar
+- **Efeito:** Translação contínua com efeito de mola elástica.
+- **Cálculo:** $\text{translateX} = \text{activeIndex} \times 44\text{px}$.
+- **Transição:** `transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)`.
 
-- sm: botões, chips, overlays pequenos
-- DEFAULT: cards, dropdowns, superfícies flutuantes padrão
-- md: cards elevados, side panels
-- lg: modais e overlays de alta prioridade
+### 2. Leitor Biométrico (`FingerprintIcon`)
+- **Efeito de Traçado:** Ao pressionar o botão do mouse (`onMouseDown`), os traços vetoriais são desenhados de $0\%$ a $100\%$ em $0.65\text{s}$ (`pathLength: 0 -> 1`), permanecendo preenchidos no último frame.
+- **Group-Press Feedback:** Pressionar o leitor ou o botão causa depressão sincronizada (`scale-90` e `scale-95`) com iluminação no anel biométrico.
 
----
+### 3. Copo de Folga (`CupSodaIcon`)
+- **Loop Infinito:** Onda do líquido, canudo e borbulhas de gás executam animações perpétuas e assíncronas no estado de folga.
 
-## Components
-
-> Todos os estados (hover/focus/disabled/error) abaixo são **[proposto]** —
-> o arquivo Figma não define variantes de componente. Cores base são as extraídas.
-
-### Buttons
-- **Primary**: fill `#25586A`, texto `#FFFFFF`, radius md.
-- **Secondary**: transparente, texto `#000000`, 1px border (ver nota sobre `border`), radius md.
-- **Ghost**: transparente, texto muted, radius md.
-- Focus ring: 3px do token primário com alpha ~12%.
-- Disabled: 40% opacity.
-
-### Cards
-- **Default**: fill `#E4F6FB`, border sutil, radius md/lg.
-- **Large Panel**: fill `#E4F6FB`, radius lg (16px).
-
-### Inputs
-- **Default**: fill `#E4F6FB`, border sutil, texto `#000000`.
-- **Focus**: border `#25586A` + focus ring.
-- **Error**: border `#EF4444` + ring (cor proposta).
-- **Disabled**: 40% opacity, texto muted.
-
-### Layout Containers
-- `#E4F6FB` para regiões contidas; `#FFFFFF` para fundo de página. [extraído]
-- 16px apenas para painéis grandes. [proposto]
-
----
-
-## Layout Principles [proposto]
-
-- Whitespace generoso entre seções.
-- Agrupamento card-based para conteúdo relacionado.
-- Ritmo de spacing na base 8px.
-- Manter fundo de página e surface visualmente distintos.
-- Reusar padrões de auto layout (a criar — o arquivo atual não tem nenhum).
-
-## Do's and Don'ts
-
-1. **Do** usar `#25586A` para ênfase interativa principal — é a cor mais recorrente do arquivo.
-2. **Do** manter fundo de página `#FFFFFF`.
-3. **Do** preservar contraste forte com `#000000` no conteúdo de leitura.
-4. **Do** tratar as cores decorativas (`#FFE5D9`, `#FDE4CF`, etc.) como amostras, não tokens.
-5. **Don't** introduzir accent colors novas sem promover a token semântico.
-6. **Don't** assumir que bordas/radius/estados vêm do Figma — foram normalizados aqui; revisar antes de considerar fonte da verdade.
-
----
-
-## Provenance
-
-- Auditado contra a API do Figma em 2026-08-25 (file `7chQ1nVn4WMA3ySoq18bdn`, lastModified 2026-08-26T01:14Z).
-- Página escaneada: Main (12 root nodes). Existe também página "Draft" com 1 frame, fora do escopo.
-- Draft original gerado por plugin Figma; este documento corrige omissões (#335C67, cores decorativas) e distingue extraído vs. proposto.
+### 4. Partículas e Celebração
+- **Batidas 1 a 3:** Explosão de gotas de água azuis disparadas a partir do centro da tela.
+- **4ª Batida:** Chuva de confetes com estrelas douradas ✨ disparadas por canhões laterais duplos.

@@ -1,61 +1,74 @@
-# onPoint — Especificação
+# onPoint — Especificação Técnica
 
-> Prazo: 1 semana · Objetivo: bater o ponto no horário correto.
-> Primeiro projeto com Tauri / primeiro app nativo de desktop.
+> **Versão:** 0.2.0 · **Objetivo:** Garantir a pontualidade no registro de ponto diário através de micro-interações elegantes e feedback visual contínuo.
 
-## 1. Visão Geral
+---
 
-- **Estética:** Google / Material Express 3, azul, animações fluidas
-- **Assinatura visual:** relógio "clockando" com água subindo representando o
-  tempo até a próxima batida (liquid gauge)
+## 1. Visão Geral e Princípios de Design
 
-## 2. Arquitetura
+- **Estética:** Inspirado no Google / Material Expressss 3, paleta azul oceano (`#25586A`, `#ACEBF0`, `#E4F6FB`, `#FFFFFF`), cantos arredondados (`rounded-3xl` / `rounded-4xl`), transições suaves e feedback tátil.
+- **Assinatura Visual:** Relógio digital centralizado acompanhado por medidor líquido (*Liquid Fill Gauge*) que se preenche progressivamente à medida que o horário do turno se aproxima.
+- **Micro-Interações Recompensadoras:** Chuva de confetes com gotas azuis em batidas intermediárias e explosão de estrelas douradas ✨ ao concluir o expediente.
 
-- **Front-end:** Vite, React, TypeScript, Tailwind CSS 4
-- **UI:** Material Express 3-like (libs a definir)
-- **Back-end:** nenhum por enquanto (Tauri shell apenas)
-- **Infra:** Arch Linux, Ubuntu e Windows
+---
 
-## 3. Funcionalidades
+## 2. Arquitetura do Software
 
-### A. Core
+- **Front-end:** Vite 7, React 19, TypeScript 5, Tailwind CSS 4.
+- **Micro-Animações:** `framer-motion`, `canvas-confetti`, `react-ts-liquid-gauge`.
+- **Camada Nativa de Desktop:** Tauri 2 (Rust).
+- **Persistência de Dados:**
+  - Primária: `@tauri-apps/plugin-store` (`settings.json`).
+  - Cache / Fallback: `localStorage` do Webview.
+- **Plataformas Homologadas:** Linux (Arch Linux, Wayland, Ubuntu, X11) e Windows 11.
 
-- Lembrar o usuário de bater o ponto
-- Botão principal "OK — Realizar batida" → abre o site de batida
+---
 
-### B. Calendário de batidas
+## 3. Requisitos Funcionais
 
-- Botão de navegação para visão de calendário sobre batidas
-- Dias incorretos sinalizados (checagem central no próprio site da batida)
-- Transição que troca a visão central do widget
+### A. Núcleo Operacional (Ponto)
+1. **Relógio Digital**: Exibição contínua do horário militar (`HH:MM`) com precisão de segundos.
+2. **Cálculo Dinâmico da Água**:
+   - $0\%$ a $100\%$ entre o início do intervalo e o horário alvo do turno.
+   - Drenagem suave (~800ms) após o registro de cada batida.
+3. **Modo Bater Ponto em Tela Cheia**:
+   - Ao atingir o horário previsto, ativa o modo imersivo (`fixed inset-0 z-50`).
+   - Apresenta o leitor biométrico vetorial com animação de desenho 1x por clique e retenção no frame completo.
+   - Ao confirmar, dispara a URL externa configurada via `@tauri-apps/plugin-opener`.
+4. **Marcadores de Progresso**: Dots inferiores indicando turnos cumpridos, turno ativo com spinner e turnos futuros.
+5. **Barra de Testes Integrada**: Simulação instantânea de batidas 1, 2, 3, 4 ✨, enchimento progressivo e reset.
 
-### C. Easter egg (futuro)
+### B. Módulo de Configurações
+1. **Cadastro e Edição de Escalas**: Até 4 turnos diários configuráveis por bloco de dias.
+2. **Seleção de Dias da Semana**: Popover inteligente com filtros rápidos (*Todos os dias*, *Segunda a Sexta*, *Finais de semana*).
+3. **Seletor de Horários 24h**: Modal integrado com conversão automática 12h/24h.
+4. **Inicialização com o Sistema**: Opção para auto-start ao ligar o computador.
+5. **Fechamento e Ocultação**: Suporte a fechar ou minimizar a janela para a bandeja.
 
-- Integração WhatsApp enviando "HORA DE BATER O PONTO" no horário configurado
+### C. Calendário Mensal (Em desenvolvimento)
+1. Visão consolidada dos dias trabalhados no mês.
+2. Detecção e alerta visual para batidas faltantes ou inconsistências.
 
-## 4. Decisões técnicas
+---
 
-| Tema            | Decisão                                                              |
-| --------------- | -------------------------------------------------------------------- |
-| Wayland         | `WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11` no script `tauri:arch` |
-| Janela          | 400×300 fixa, `alwaysOnTop`, `decorations: false`, `transparent: true` |
-| Bordas          | `rounded-4xl` no `<main>` com `w-screen h-screen`                     |
-| Liquid gauge    | SVG animado via CSS ou framer-motion (`react-wave-progress` alternativa) |
-| Fundo           | Azul Material Express 3                                               |
+## 4. Decisões Técnicas
 
-## 5. Cronograma
+| Tema | Decisão | Racional |
+| :--- | :--- | :--- |
+| **Aceleração Gráfica** | `WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11` | Resolve falhas de renderização e congelamento do WebKitGTK no Wayland/Arch Linux. |
+| **Janela Nativa** | 600×500, `transparent: true`, `decorations: false` | Proporciona visual moderno sem bordas de janela padrão do SO. |
+| **Portais React** | `createPortal(..., document.body)` | Evita que menus de navegação (`Navbar`) sobreponham os modais de configuração. |
+| **Hierarquia Z-Index** | Base: `z-0`, Navbar: `z-10`, Modal: `z-[100]`, Popover: `z-[120]` | Garante ordenação visual rigorosa sem conflitos de stacking context. |
+| **Navegação Deslizante** | `translateX(activeIndex * 44px)` | Curva de mola CSS com aceleração por GPU para transição entre abas. |
 
-### Fase 1 — Setup e Mock ✅
-- [x] Projeto Vite + React + TS inicializado, script Wayland ajustado
-- [x] `tauri.conf.json`: janela fixa, transparente, sem decorações
-- [ ] `alwaysOnTop: true`
+---
 
-### Fase 2 — Interface e Estética 🚧
-- [ ] Widget flutuante Tailwind (fundo azul, rounded-4xl no main)
-- [ ] Relógio liquid gauge (água subindo), baixo consumo de hardware
-- [ ] Estado secundário: calendário de batidas com transição de visão
+## 5. Status do Cronograma
 
-### Fase 3 — Integração e Agentes ⬜
-- [ ] Lembrete no horário configurado
-- [ ] Abertura do site de batida
-- [ ] (Futuro) Integração WhatsApp
+- [x] **Fase 1 — Setup e Shell Tauri 2** (Janela transparente, flags Wayland, Tailwind CSS 4).
+- [x] **Fase 2 — Liquid Gauge & Relógio 24h** (Ondas dinâmicas, drenagem suave).
+- [x] **Fase 3 — Modo Bater Ponto em Tela Cheia** (Take-over 100%, leitor biométrico animado).
+- [x] **Fase 4 — Sistema de Celebrações** (Confetes de água e estrelas douradas ✨).
+- [x] **Fase 5 — Configuração de Escalas & Modais** (Time pickers, portais, persistência dupla).
+- [x] **Fase 6 — Barra de Teste e Validação** (Toolbar com simulações instantâneas).
+- [ ] **Fase 7 — Calendário Mensal e Histórico** (Grid mensal e consolidação de espelho de ponto).

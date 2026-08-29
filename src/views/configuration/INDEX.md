@@ -1,29 +1,31 @@
 # Módulo de Configurações (`src/views/configuration`)
 
-Este módulo é responsável pelo gerenciamento de preferências e configurações do aplicativo **onPoint**, incluindo inicialização do sistema, definição de escalas e horários de trabalho, além do controle de encerramento da aplicação.
+Este módulo é responsável pelo gerenciamento de preferências e configurações do aplicativo **onPoint**, incluindo inicialização com o sistema operacional, definição e edição de escalas/turnos de trabalho, seleção inteligente de dias da semana e integração com o sistema de arquivos via Tauri Store.
 
 ---
 
-## 📁 Estrutura de Arquivos
+## Estrutura de Arquivos
 
 ```
 src/views/configuration/
-├── Button.Toggle.tsx      # Componente de chave liga/desliga (switch) customizado
-├── Modal.DatePicker.tsx   # Seletor de dias da semana (dias úteis, finais de semana, customizado)
-├── Modal.Hour.tsx         # Modal de definição dos horários de batida de ponto
-├── Page.Configuration.tsx # View/Página principal de configurações
-└── index.md               # Documentação técnica do módulo
+├── Button.Toggle.tsx      # Componente acessível de switch liga/desliga
+├── Modal.DatePicker.tsx   # Popover inteligente de seleção de dias da semana
+├── Modal.Hour.tsx         # Modal de turnos renderizado via React createPortal
+├── Modal.HourPicker.tsx   # Seletor de relógio 24h integrado com timepicker-ui-react
+├── Page.Configuration.tsx # View principal de listagem e gerenciamento de escalas
+└── INDEX.md               # Documentação técnica do módulo
 ```
 
 ---
 
-## 🧩 Componentes
+## Componentes
 
 ### 1. `PageConfiguration` (`Page.Configuration.tsx`)
 View principal exibida quando a aba **Configurações** está ativa na navegação central.
 
 #### Responsabilidades:
-- Controla o estado de inicialização automática ao ligar o sistema.
+- Controla a flag de inicialização automática ao ligar o sistema.
+- Lista as escalas e horários cadastrados (ex.: `Segunda a Sexta`, `Finais de semana`) com ações de edição e exclusão.
 - Aciona a abertura do modal de configuração de horários (`ModalHour`).
 - Executa o fechamento completo do aplicativo via Tauri Window API (`appWindow.close()`).
 
@@ -32,10 +34,63 @@ View principal exibida quando a aba **Configurações** está ativa na navegaç�
 | :--- | :--- | :--- |
 | `ativo` | `boolean` | Flag indicando se a inicialização com o sistema está habilitada |
 | `modalContainerHour` | `boolean` | Controla a visibilidade do modal de definição de horários |
+| `editingSchedule` | `ScheduleItem \| null` | Escala selecionada para edição (ou `null` para novo cadastro) |
+| `schedules` | `ScheduleItem[]` | Lista de escalas cadastradas salvas no Tauri Store e localStorage |
 
 ---
 
-### 2. `ButtonToggle` (`Button.Toggle.tsx`)
+### 2. `ModalHour` (`Modal.Hour.tsx`)
+Modal com backdrop blur e renderização via **`createPortal`** no `document.body`.
+
+#### Arquitetura de Camadas (Stacking Context & Portals):
+- **`createPortal(..., document.body)`**: Renderiza o modal fora da árvore DOM interna, evitando que a barra de navegação ou layouts pais fiquem sobrepostos.
+- **Nível de Z-Index**:
+  - `Modal.Hour.tsx`: `z-[100]` (cobre toda a janela do app e a navbar `z-10`).
+  - `Modal.DatePicker.tsx` (Popover): `z-[120]` (abre sobre o modal).
+
+#### Estrutura:
+1. **Cabeçalho**: Título dinâmico (*"Definir Horário"* ou *"Editar Horário"*).
+2. **Seletor de Dias**: `ModalDatePicker` para seleção dos dias aplicáveis.
+3. **Turnos de Ponto**: 4 turnos padrão com badges coloridas e botões de seleção de horário:
+   - `1° Horário entrada` (Padrão: 08:00)
+   - `2° Horário saída` (Padrão: 12:00)
+   - `3° Horário entrada` (Padrão: 13:00)
+   - `4° Horário saída` (Padrão: 17:00)
+4. **Botão Salvar**: Persiste os dados na escala ativa e fecha o modal.
+
+---
+
+### 3. `ModalDatePicker` (`Modal.DatePicker.tsx`)
+Componente Popover para seleção dos dias da semana com `z-[120]`.
+
+#### Modelo de Dados:
+```typescript
+export interface DayOfWeek {
+  id: string;    // 'dom' | 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab'
+  short: string; // 'Dom' | 'Seg' | 'Ter' | 'Qua' | 'Qui' | 'Sex' | 'Sáb'
+  full: string;  // 'Domingo' | 'Segunda-feira' | ...
+}
+```
+
+#### Rótulos Inteligentes:
+- `Todos os dias`: Quando os 7 dias estão selecionados.
+- `Segunda a Sexta`: Quando os 5 dias úteis estão selecionados.
+- `Finais de semana`: Quando apenas Sábado e Domingo estão selecionados.
+- `Seg, Ter, Qua`: Formatação abreviada para seleções customizadas.
+- `Selecionar dias`: Quando nenhum dia está selecionado.
+
+---
+
+### 4. `ModalHourPicker` (`Modal.HourPicker.tsx`)
+Wrapper sobre `timepicker-ui-react` que garante exibição e persistência estrita no padrão **24 horas (HH:MM)**.
+
+#### Conversão de Formatos:
+- **`to12h(time24)`**: Converte `"17:00"` para `"05:00 PM"` para inicializar o picker visual de 12 horas.
+- **`to24h(hour, minutes, type)`**: Converte a saída do picker (ex: `05:00 PM`) de volta para o padrão militar 24h (`"17:00"`).
+
+---
+
+### 5. `ButtonToggle` (`Button.Toggle.tsx`)
 Componente acessível de switch/toggle com suporte a animação deslizante e feedback visual.
 
 #### Propriedades (`ButtonToggleProps`):
@@ -43,102 +98,14 @@ Componente acessível de switch/toggle com suporte a animação deslizante e fee
 | :--- | :--- | :---: | :--- |
 | `label` | `string` | Sim | Texto principal exibido no card |
 | `description` | `string` | Não | Subtítulo ou texto descritivo opcional |
-| `checked` | `boolean` | Sim | Estado atual do toggle (marcado/desmarcado) |
+| `checked` | `boolean` | Sim | Estado atual do toggle |
 | `onChange` | `(checked: boolean) => void` | Sim | Callback disparado ao alternar o valor |
-| `disabled` | `boolean` | Não | Desativa interações quando `true` (padrão: `false`) |
-| `activeColorClass` | `string` | Não | Classe Tailwind para o fundo ativo (padrão: `'bg-emerald-500'`) |
-| `className` | `string` | Não | Classes adicionais para o container do botão |
-
-#### Acessibilidade:
-- Utiliza `role="switch"` e `aria-checked={checked}`.
-- Propriedade `touchAction: 'manipulation'` para otimização em telas de toque.
+| `disabled` | `boolean` | Não | Desativa interações quando `true` |
 
 ---
 
-### 3. `ModalHour` (`Modal.Hour.tsx`)
-Modal com backdrop blur para configuração dos turnos de batida de ponto do colaborador.
+## Persistência de Dados
 
-#### Propriedades (`ModalHourProps`):
-| Propriedade | Tipo | Obrigatório | Descrição |
-| :--- | :--- | :---: | :--- |
-| `setModalContainerHour` | `(modal: boolean) => void` | Sim | Função para fechar/abrir o modal |
-
-#### Estrutura:
-1. **Cabeçalho**: Título "Definir Horário" estilizado em `text-brand-main`.
-2. **Seletor de Dias**: Componente `ModalDatePicker` para seleção dos dias aplicáveis.
-3. **Turnos de Ponto**:
-   - `1° Horário entrada`
-   - `2° Horário saída` (intervalo/almoço)
-   - `3° Horário entrada` (retorno)
-   - `4° Horário saída` (fim de expediente)
-4. **Ação Principal**: Botão "Salvar" para confirmar e persistir alterações.
-
----
-
-### 4. `ModalDatePicker` (`Modal.DatePicker.tsx`)
-Componente Popover para seleção dos dias da semana aplicáveis à rotina de trabalho.
-
-#### Modelo de Dados:
-```typescript
-export interface DayOfWeek {
-  id: string;   // Identificador único (ex: 'seg', 'ter')
-  short: string; // Nome abreviado (ex: 'Seg', 'Ter')
-  full: string;  // Nome por extenso (ex: 'Segunda-feira')
-}
-```
-
-#### Constantes:
-- `DAYS_OF_WEEK`: Lista ordenada dos 7 dias da semana iniciando em Domingo (`dom` até `sab`).
-
-#### Funcionalidades:
-- **Seleção Individual**: Alternância de seleção ao clicar no botão do dia.
-- **Rótulo Inteligente no Botão**:
-  - `Todos os dias`: Quando os 7 dias estão selecionados.
-  - `Segunda a Sexta`: Quando apenas os 5 dias úteis estão selecionados.
-  - `Finais de semana`: Quando apenas Sábado e Domingo estão selecionados.
-  - Lista formatada: Ex: `"Seg, Ter, Qua"` para seleções customizadas.
-  - `Selecionar dias`: Quando nenhum dia está selecionado.
-- **Atalhos Rápidos**:
-  - `Seg – Sex`: Seleciona rapidamente os 5 dias úteis.
-  - `Todos`: Marca todos os 7 dias.
-  - `Limpar`: Remove todas as seleções.
-
----
-
-### 5. `ModalHourPicker` (`Modal.HourPicker.tsx`)
-Componente para seleção de horários de turno utilizando a biblioteca `timepicker-ui-react` no formato 24 horas.
-
-#### Propriedades (`ModalHourPickerProps`):
-| Propriedade | Tipo | Obrigatório | Descrição |
-| :--- | :--- | :---: | :--- |
-| `initialTime` | `string` | Não | Horário inicial exibido no relógio (padrão: `'08:00'`) |
-| `onConfirm` | `(time: string) => void` | Sim | Callback executado ao confirmar um horário formatado (`HH:MM`) |
-| `onCancel` | `() => void` | Sim | Callback executado ao cancelar ou fechar o seletor |
-
-#### Funcionamento:
-- Ao ser montado, aciona automaticamente o clique no input interno referenciado para exibir o relógio Material Design com animação fluida.
-- Configurado com relógio de **24 horas**, tema **basic** e rótulos em português (*"Confirmar"*, *"Cancelar"*, *"Definir Horário"*).
-
----
-
-## 🎨 Paleta de Cores e Temas
-
-Os componentes utilizam as variáveis de tema configuradas no Tailwind CSS v4:
-- `--color-brand-main`: `#25586A` (Azul escuro principal, botões ativos e títulos)
-- `--color-brand-secondary`: `#ACEBF0` (Azul claro de destaque e trilhos)
-- `--color-brand-background`: `#E4F6FB` (Fundo geral da aplicação)
-
----
-
-## 🔗 Integração Tauri
-
-A página utiliza a API do Tauri para interação com a janela nativa:
-```typescript
-import { getCurrentWindow } from "@tauri-apps/api/window";
-
-const fecharJanela = async () => {
-  const appWindow = getCurrentWindow();
-  await appWindow.close(); // Encerra o processo da janela
-};
-```
-
+As configurações de horários e escalas são salvas utilizando `@tauri-apps/plugin-store` (`settings.json`) no sistema operacional com fallback e sincronia no `localStorage`:
+- **Tauri Store**: Permite que o backend Rust leia as configurações de escalas para disparo de notificações e alarmes em segundo plano.
+- **Sincronia Automática**: Criação, edição e exclusão de horários persistem instantaneamente ao salvar.
