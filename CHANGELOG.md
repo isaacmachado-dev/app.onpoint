@@ -1,12 +1,8 @@
 # Changelog
 
-Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
-e [SemVer](https://semver.org/lang/pt-BR/).
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
-## v0.1.1
-
-[compare changes](https://github.com/isaacmachado-dev/app.onpoint/compare/v0.2.0...v0.1.1)
-
+## [0.1.2](https://github.com///compare/v0.1.1...v0.1.2) (2026-08-29)
 ## [0.1.0] — 2026-08-25
 
 ### Adicionado
