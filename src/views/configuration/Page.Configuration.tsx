@@ -100,7 +100,7 @@ export default function PageConfiguration() {
   };
     
   return (
-    <>
+    <div className="animate-fade animate-duration-200">
       <div className="flex flex-col items-center justify-center text-center gap-4 w-full max-w-sm">
         {/* Toggle Inicializar com o sistema */}
         <div className="bg-white rounded-full p-4 w-full">
@@ -117,7 +117,7 @@ export default function PageConfiguration() {
         {/* Card Definir horário */}
         <div className="bg-white rounded-3xl p-5 w-full text-left shadow-xs flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-black">Definir horário</h2>
+            <h2 className="font-semibold text-sm">Configurar horário</h2>
             <button
               type="button"
               onClick={handleAddNewSchedule}
@@ -141,7 +141,7 @@ export default function PageConfiguration() {
                 className="text-xs font-semibold text-brand-main bg-brand-background hover:bg-brand-secondary/50 py-3 px-4 rounded-full transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                Adicionar horário de expediente
+                Adicionar
               </button>
             ) : (
               schedules.map((schedule) => (
@@ -177,6 +177,14 @@ export default function PageConfiguration() {
             )}
           </div>
         </div>
+
+        <button 
+          type="button"
+          className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row cursor-pointer hover:bg-gray-50 transition-colors" 
+          onClick={() => location.reload()}
+        >
+          <h3 className="text-black">Checar atualizações</h3>
+        </button>
         
         {/* Botão Fechar completamente */}
         <button 
@@ -195,6 +203,6 @@ export default function PageConfiguration() {
           onSave={handleSaveSchedule}
         />
       )}
-    </>
+    </div>
   );
 }

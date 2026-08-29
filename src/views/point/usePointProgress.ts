@@ -2,8 +2,16 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useEffect, useRef, useState } from "react";
 import { ScheduleItem, ShiftHour } from "../configuration/Modal.Hour";
+import { triggerFinalCelebrationConfetti, triggerWaterSplashConfetti } from "./confetti";
 
 const DAY_KEYS = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+
+const DEFAULT_SHIFTS: ShiftHour[] = [
+  { id: 1, label: "1° Entrada", time: "08:00" },
+  { id: 2, label: "2° Saída", time: "12:00" },
+  { id: 3, label: "3° Entrada", time: "13:00" },
+  { id: 4, label: "4° Saída", time: "17:00" },
+];
 
 const getFormattedTime = () => {
   const now = new Date();
@@ -104,13 +112,16 @@ export function usePointProgress() {
     loadData();
   }, []);
 
+  const [isManualTest, setIsManualTest] = useState<boolean>(false);
+
   // 2. Loop de atualização em tempo real
   useEffect(() => {
     const updateProgress = () => {
       const now = new Date();
       setRealTime(getFormattedTime());
 
-      if (!hasScheduleToday || shifts.length === 0 || isDraining) return;
+      // Se estiver em teste manual ou esvaziando, não sobrescreve pelo relógio
+      if (isManualTest || !hasScheduleToday || shifts.length === 0 || isDraining) return;
 
       const totalShifts = shifts.length;
       if (completedPunches >= totalShifts) {
@@ -157,7 +168,7 @@ export function usePointProgress() {
     updateProgress();
     const timer = setInterval(updateProgress, 1000);
     return () => clearInterval(timer);
-  }, [shifts, completedPunches, isDraining, storageGaugeKey, hasScheduleToday]);
+  }, [shifts, completedPunches, isDraining, storageGaugeKey, hasScheduleToday, isManualTest]);
 
   // 3. Ação de Bater Ponto
   const handlePunch = async () => {
@@ -167,6 +178,16 @@ export function usePointProgress() {
       await openUrl(punchUrl);
     } catch {
       window.open(punchUrl, "_blank");
+    }
+
+    // Dispara a animação de confetes / splash
+    const nextPunchCount = completedPunches + 1;
+    const isFinalPunch = nextPunchCount >= shifts.length;
+
+    if (isFinalPunch) {
+      triggerFinalCelebrationConfetti();
+    } else {
+      triggerWaterSplashConfetti();
     }
 
     setIsDraining(true);
@@ -201,6 +222,77 @@ export function usePointProgress() {
     }, 40);
   };
 
+  // Métodos de Teste / Simulação
+  const testSimulatePunch = (punchCount: number) => {
+    setIsManualTest(true);
+    if (!hasScheduleToday || shifts.length === 0) {
+      setShifts(DEFAULT_SHIFTS);
+      setHasScheduleToday(true);
+    }
+
+    const isFinal = punchCount >= 4;
+    if (isFinal) {
+      triggerFinalCelebrationConfetti();
+    } else {
+      triggerWaterSplashConfetti();
+    }
+
+    setCompletedPunches(punchCount);
+    setGaugeValue(0);
+    try {
+      localStorage.setItem(storagePunchKey, String(punchCount));
+      localStorage.setItem(storageGaugeKey, "0");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const testTriggerReadyToPunch = () => {
+    setIsManualTest(true);
+    if (!hasScheduleToday || shifts.length === 0) {
+      setShifts(DEFAULT_SHIFTS);
+      setHasScheduleToday(true);
+    }
+    setGaugeValue(100);
+    try {
+      localStorage.setItem(storageGaugeKey, "100");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const testSimulateGrowth = () => {
+    setIsManualTest(true);
+    if (!hasScheduleToday || shifts.length === 0) {
+      setShifts(DEFAULT_SHIFTS);
+      setHasScheduleToday(true);
+    }
+    
+    let current = 0;
+    setGaugeValue(0);
+    const growInterval = window.setInterval(() => {
+      current += 2;
+      if (current >= 100) {
+        clearInterval(growInterval);
+        setGaugeValue(100);
+      } else {
+        setGaugeValue(current);
+      }
+    }, 30);
+  };
+
+  const testResetDay = () => {
+    setIsManualTest(false);
+    setCompletedPunches(0);
+    setGaugeValue(0);
+    try {
+      localStorage.removeItem(storagePunchKey);
+      localStorage.removeItem(storageGaugeKey);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const isAllCompleted = hasScheduleToday && shifts.length > 0 && completedPunches >= shifts.length;
   const currentShift = !isAllCompleted && hasScheduleToday && shifts.length > 0 ? shifts[completedPunches] : null;
   const isReadyToPunch = !isAllCompleted && hasScheduleToday && gaugeValue >= 100 && !isDraining;
@@ -223,6 +315,12 @@ export function usePointProgress() {
     currentShift,
     totalDayPercentage,
     handlePunch,
+    testSimulatePunch,
+    testTriggerReadyToPunch,
+    testSimulateGrowth,
+    testResetDay,
   };
 }
+
+
 

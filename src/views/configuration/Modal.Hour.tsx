@@ -1,5 +1,6 @@
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import ModalDatePicker from "./Modal.DatePicker";
 import ModalHourPicker from "./Modal.HourPicker";
 
@@ -148,10 +149,10 @@ export default function ModalHour({
     setModalContainerHour(false);
   };
 
-  return (
+  return createPortal(
     <>
       <div 
-        className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs"
+        className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-xs"
         onClick={() => setModalContainerHour(false)}
       >
         <div 
@@ -208,6 +209,7 @@ export default function ModalHour({
           onCancel={handleCancelPicker}
         />
       )}
-    </>
+    </>,
+    document.body
   );
 }

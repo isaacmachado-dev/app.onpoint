@@ -79,7 +79,7 @@ export default function ModalHourPicker({
           labels: {
             ok: "Confirmar",
             cancel: "Cancelar",
-            time: "Definir Horário",
+            time: "Selecionar",
           },
         }}
         onConfirm={handleConfirm}

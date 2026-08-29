@@ -88,7 +88,7 @@ const ModalDatePicker = ({
           </Button>
         }
       />
-      <PopoverContent align="start" className="w-[280px] p-3 rounded-2xl shadow-xl bg-white">
+      <PopoverContent align="start" className="z-[120] w-[280px] p-3 rounded-2xl shadow-xl bg-white border border-gray-100">
         {/* Botões dos Dias da Semana */}
         <div className="grid grid-cols-7 gap-1">
           {DAYS_OF_WEEK.map((day) => {

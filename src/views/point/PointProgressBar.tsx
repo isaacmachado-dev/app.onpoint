@@ -20,6 +20,8 @@ export function PointProgressBar({
 }: PointProgressBarProps) {
   if (!hasScheduleToday) {
     return (
+      
+      <>
       <div className="w-52 mt-2 flex flex-col items-center gap-1">
         <button
           type="button"
@@ -29,6 +31,8 @@ export function PointProgressBar({
           Configurar horário
         </button>
       </div>
+      </>
+     
     );
   }
 

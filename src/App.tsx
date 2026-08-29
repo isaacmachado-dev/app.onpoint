@@ -1,5 +1,5 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { X } from "lucide-react";
+import { Minus } from "lucide-react";
 import "./App.css";
 import Navbar from "./components/ui/navbar";
 
@@ -16,12 +16,12 @@ function App() {
   };
 
   return (
-    <main className="w-full h-full text-black bg-brand-background flex flex-col justify-between select-none">
+    <main className="w-full h-full teMinust-black bg-brand-background flex flex-col justify-between select-none">
       {/* Header com suporte a arraste de janela no Tauri */}
       <div data-tauri-drag-region className="flex w-full flex-row items-start justify-between">
         <div data-tauri-drag-region className="flex flex-row items-center gap-2 p-2">
           <img
-            src="/onpoint.svg"
+            src="/onPoint.svg"
             alt="onPoint Logo"
             className="w-10 h-10 pointer-events-none"
           />
@@ -35,7 +35,7 @@ function App() {
           aria-label="Fechar"
           onClick={fecharJanela}
         >
-          <X className="text-brand-main w-5 h-5" />
+          <Minus className="text-brand-main w-5 h-5" />
         </button>
       </div>
     
