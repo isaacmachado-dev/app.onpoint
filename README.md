@@ -3,7 +3,8 @@
 <p align="center">
   <img src="public/onPoint.svg" alt="onPoint Logo" width="96" height="96" />
 </p>
-> <strong>Bata o ponto no horário certo. Sem esquecer.</strong><br />
+
+> Bata o ponto no horário certo. Sem esquecer.</strong><br />
   Aplicativo inteligente e elegante para Windows, Ubuntu e Archlinux desenvolvido com Tauri, React e Tailwindcss.
 
 ---
