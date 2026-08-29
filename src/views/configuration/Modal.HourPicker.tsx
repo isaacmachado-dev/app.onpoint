@@ -3,9 +3,37 @@ import { Timepicker } from "timepicker-ui-react";
 import "timepicker-ui/main.css";
 
 export interface ModalHourPickerProps {
-  initialTime?: string;
-  onConfirm: (time: string) => void;
+  initialTime?: string; // Formato 24h (ex: "08:00", "17:00")
+  onConfirm: (time24h: string) => void;
   onCancel: () => void;
+}
+
+// Converte "17:00" (24h) para "05:00 PM" (12h) para o defaultValue do Timepicker
+function to12h(time24?: string): string {
+  if (!time24 || !time24.includes(":")) return "08:00 AM";
+  const [hStr, mStr] = time24.split(":");
+  const h = parseInt(hStr, 10);
+  const m = parseInt(mStr, 10) || 0;
+  const period = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+// Converte a confirmação 12h AM/PM para formato 24h "HH:MM" (ex: "17:00")
+function to24h(hour?: string, minutes?: string, type?: string): string {
+  if (!hour || !minutes) return "08:00";
+  let h = parseInt(hour, 10);
+  const m = parseInt(minutes, 10) || 0;
+  const isPM = type?.toUpperCase() === "PM";
+  const isAM = type?.toUpperCase() === "AM";
+
+  if (isPM && h < 12) {
+    h += 12;
+  } else if (isAM && h === 12) {
+    h = 0;
+  }
+
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 export default function ModalHourPicker({
@@ -28,9 +56,8 @@ export default function ModalHourPicker({
 
   const handleConfirm = (data: { hour?: string; minutes?: string; type?: string }) => {
     if (data?.hour && data?.minutes) {
-      const h = data.hour.toString().padStart(2, "0");
-      const m = data.minutes.toString().padStart(2, "0");
-      onConfirm(`${h}:${m}`);
+      const time24h = to24h(data.hour, data.minutes, data.type);
+      onConfirm(time24h);
     } else {
       onCancel();
     }
@@ -40,7 +67,7 @@ export default function ModalHourPicker({
     <div className="sr-only" aria-hidden="true">
       <Timepicker
         ref={inputRef}
-        defaultValue={initialTime}
+        defaultValue={to12h(initialTime)}
         options={{
           clock: {
             type: "12h",

@@ -155,10 +155,19 @@ button {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #E4F6FB;
+    overflow: hidden;
+    @apply font-sans text-foreground;
   }
-  html {
-    @apply font-sans;
+  #root {
+    width: 100%;
+    height: 100%;
+    background-color: #E4F6FB;
   }
 }
+

@@ -24,6 +24,7 @@ View principal exibida quando a aba **Configurações** está ativa na navegaç�
 
 #### Responsabilidades:
 - Controla o estado de inicialização automática ao ligar o sistema.
+- Lista as escalas e horários cadastrados (ex.: `Seg-Qui`, `Sex`) com ações de edição e exclusão.
 - Aciona a abertura do modal de configuração de horários (`ModalHour`).
 - Executa o fechamento completo do aplicativo via Tauri Window API (`appWindow.close()`).
 
@@ -32,6 +33,8 @@ View principal exibida quando a aba **Configurações** está ativa na navegaç�
 | :--- | :--- | :--- |
 | `ativo` | `boolean` | Flag indicando se a inicialização com o sistema está habilitada |
 | `modalContainerHour` | `boolean` | Controla a visibilidade do modal de definição de horários |
+| `schedules` | `ScheduleItem[]` | Lista de faixas de dias/escalas cadastradas para definir horários |
+
 
 ---
 
@@ -131,10 +134,14 @@ Os componentes utilizam as variáveis de tema configuradas no Tailwind CSS v4:
 ---
 
 ## 🔗 Integração Tauri
+## 💾 Persistência de Dados (Tauri Store & localStorage)
 
 A página utiliza a API do Tauri para interação com a janela nativa:
 ```typescript
 import { getCurrentWindow } from "@tauri-apps/api/window";
+As configurações de horários e escalas são salvas utilizando `@tauri-apps/plugin-store` (`settings.json`) no sistema operacional com fallback/sincronia no `localStorage`:
+- **Tauri Store**: Permite que o backend Rust leia as configurações de escalas para disparo de alarmes e notificações em segundo plano.
+- **Sincronia Automática**: Criação, edição e exclusão de horários persistem instantaneamente ao clicar em "Salvar" ou no botão de excluir.
 
 const fecharJanela = async () => {
   const appWindow = getCurrentWindow();
