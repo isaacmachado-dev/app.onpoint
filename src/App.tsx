@@ -2,9 +2,9 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Calendar, ScanFace, Settings, X } from "lucide-react";
 import { useState } from "react";
 import "./App.css";
-import CalendarComponent from "./components/Calendar";
-import ConfigurationComponent from "./components/Configuration";
-import Point from "./components/Point";
+import PageCalendar from "./views/calendar/Page.Calendar";
+import PageConfiguration from "./views/configuration/Page.Configuration";
+import PagePoint from "./views/point/Page.Point";
 
 type View = "ponto" | "calendario" | "configuracoes";
 
@@ -48,15 +48,15 @@ function App() {
       {/* Conteúdo Central alternável de acordo com a aba ativa */}
       <div className="flex-1 flex flex-col items-center justify-center px-4">
         {currentView === "ponto" && (
-          <Point />
+          <PagePoint />
         )}
-
+  
         {currentView === "calendario" && (
-          <CalendarComponent />
+          <PageCalendar />
         )}
 
         {currentView === "configuracoes" && (
-          <ConfigurationComponent />
+          <PageConfiguration />
         )}
       </div>
 

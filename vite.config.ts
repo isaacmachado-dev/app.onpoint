@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from "@vitejs/plugin-react";
+import path from "path"; // <-- Importação necessária adicionada
 import { defineConfig } from "vite";
 
 // @ts-expect-error process is a nodejs global
@@ -11,6 +12,13 @@ export default defineConfig(async () => ({
     react(),
     tailwindcss(),
   ],
+
+  // <-- Mapeamento de rotas para o shadcn adicionado aqui -->
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

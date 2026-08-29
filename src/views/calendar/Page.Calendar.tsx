@@ -1,6 +1,6 @@
 import { Calendar } from "lucide-react";
 
-export default function CalendarComponent() {
+export default function PageCalendar() {
     return (
         <>
             <div className="flex flex-col items-center justify-center text-center">

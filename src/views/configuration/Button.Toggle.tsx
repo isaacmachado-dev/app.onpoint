@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface ToggleCardProps {
+export interface ButtonToggleProps {
   /** Texto principal exibido no card */
   label: string;
   /** Descrição ou subtítulo opcional */
@@ -17,7 +17,7 @@ export interface ToggleCardProps {
   className?: string;
 }
 
-export const ToggleCard: React.FC<ToggleCardProps> = ({
+export const ButtonToggle: React.FC<ButtonToggleProps> = ({
   label,
   description,
   checked,

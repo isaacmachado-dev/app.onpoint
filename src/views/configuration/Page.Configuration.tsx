@@ -1,9 +1,12 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
-import { ToggleCard } from "./ToggleCard";
+import { ButtonToggle } from "./Button.Toggle";
+import ModalHour from "./Modal.Hour";
 
-export default function ConfigurationComponent() {
+
+export default function PageConfiguration() {
     const [ativo, setAtivo] = useState(false);
+    const [modalContainerHour, setModalContainerHour] = useState(false);
 
     const fecharJanela = async () => {
         try {
@@ -16,12 +19,11 @@ export default function ConfigurationComponent() {
     };
     
     return (
-
         <>
             <div className="flex flex-col items-center justify-center text-center gap-4">
                 <div className="bg-white rounded-full p-4 w-full">
                     <div className="max-w-md mx-auto">
-                    <ToggleCard
+                    <ButtonToggle
                         label="Inicializar ao ligar o sistema"
                         checked={ativo}
                         onChange={setAtivo}
@@ -30,15 +32,29 @@ export default function ConfigurationComponent() {
                     </div>
                 </div>
 
-                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={() => alert("Função de definir horário ainda não implementada")}>
+                <button
+                    type="button"
+                    onClick={() => setModalContainerHour(true)} 
+                    className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row cursor-pointer hover:bg-gray-50 transition-colors"
+                >
                     <h3 className="text-black">Definir horário</h3>
                 </button>
                 
-                <button className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row" onClick={fecharJanela}>
+                <button 
+                    type="button"
+                    className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row cursor-pointer hover:bg-gray-50 transition-colors" 
+                    onClick={fecharJanela}
+                >
                     <h3 className="text-black">Fechar completamente</h3>
                 </button>
 
             </div>
+
+            {modalContainerHour && (
+                <ModalHour setModalContainerHour={setModalContainerHour} />
+            )}
+
+
         </>
     )
 }

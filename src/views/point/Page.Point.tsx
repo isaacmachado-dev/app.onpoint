@@ -1,13 +1,14 @@
 import { useState } from "react";
 import LiquidFillGauge from "react-ts-liquid-gauge";
 
-export default function PointComponent() {
-    const [value, setValue] = useState(75);
+export default function PagePoint() {
+    const [value] = useState(75);
+    const [realTime] = useState(new Date().toLocaleTimeString().slice(0, 5));
 
     return (
         <>
             <div className="w-full flex flex-col items-center">
-            <h1 className="text-3xl font-bold">14:00</h1>
+            <h1 className="text-3xl font-bold">{realTime}</h1>
 
             <div className="rounded-full flex flex-col items-center justify-center mx-auto my-3">
               <LiquidFillGauge
