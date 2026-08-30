@@ -5,6 +5,7 @@ fn greet(name: &str) -> String {
 }
 
 use tauri::{
+    image::Image,
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager,
@@ -23,8 +24,12 @@ pub fn run() {
             let sair = MenuItem::with_id(app, "sair", "Sair", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&mostrar, &sair])?;
 
+            // Ícone dedicado do tray (embarcado), com fallback para o ícone da janela
+            let tray_icon = Image::from_bytes(include_bytes!("../icons/tray.png") as &[u8])
+                .unwrap_or_else(|_| app.default_window_icon().cloned().unwrap());
+
             TrayIconBuilder::with_id("main-tray")
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(tray_icon)
                 .menu(&menu)
                 .show_menu_on_left_click(true)
                 .on_menu_event(|app, event| match event.id.as_ref() {
