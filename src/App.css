@@ -21,8 +21,6 @@
 
   color: #0f0f0f;
 
-  background-color: transparent;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -161,14 +159,14 @@ button {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #E4F6FB;
+    background-color: transparent;
     overflow: hidden;
     @apply font-sans text-foreground;
   }
   #root {
     width: 100%;
     height: 100%;
-    background-color: #E4F6FB;
+    background-color: transparent;
   }
 }
 

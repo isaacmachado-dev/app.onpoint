@@ -66,14 +66,14 @@ jobs:
           RELEASE=onpoint-${VERSION}-1-x86_64.pkg.tar.zst
           ROOT=$(mktemp -d)
 
-          install -Dm755 "$APPIMAGE" "$ROOT/usr/bin/onpoint.AppImage"
-          install -Dm644 "$ICON" "$ROOT/usr/share/icons/hicolor/128x128/apps/onpoint.png"
+          install -Dm755 "$APPIMAGE" "$ROOT/usr/bin/onPoint.AppImage"
+          install -Dm644 "$ICON" "$ROOT/usr/share/icons/hicolor/128x128/apps/onPoint.png"
           mkdir -p "$ROOT/usr/share/applications"
-          cat > "$ROOT/usr/share/applications/onpoint.desktop" <<EOF
+          cat > "$ROOT/usr/share/applications/onPoint.desktop" <<EOF
           [Desktop Entry]
           Name=onPoint
-          Exec=/usr/bin/onpoint.AppImage
-          Icon=onpoint
+          Exec=/usr/bin/onPoint.AppImage
+          Icon=onPoint
           Type=Application
           Terminal=false
           Categories=Utility;
@@ -81,7 +81,7 @@ jobs:
           cat > "$ROOT/.PKGINFO" <<EOF
           pkgname = onpoint
           pkgver = ${VERSION}-1
-          pkgdesc = onPoint - Tauri app
+          pkgdesc = onPoint - gerenciamento de ponto e frequencia
           url = https://github.com/${{ github.repository }}
           arch = x86_64
           license = custom

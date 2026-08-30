@@ -14,6 +14,17 @@ use tauri_plugin_autostart::MacosLauncher;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Wayland nativo no Arch/Hyprland: desativa DMABUF renderer do WebKitGTK
+    // Corrige crash "Gdk Error 71 Protocol error dispatching to Wayland display"
+    // sem forçar GDK_BACKEND=x11 (mantém Wayland nativo). Equivale a
+    // WEBKIT_DISABLE_DMABUF_RENDERER=1 mas injetado no binário, funciona
+    // para .deb, AppImage e binário direto sem depender de .desktop/ENV externo.
+    // Respeita valor já definido pelo usuário.
+    if std::env::var("WEBKIT_DISABLE_DMABUF_RENDERER").is_err() {
+        // SAFETY: chamado no início do main, single-thread ainda
+        unsafe { std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1") };
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())

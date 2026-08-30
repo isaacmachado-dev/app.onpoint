@@ -16,7 +16,7 @@ function App() {
   };
 
   return (
-    <main className="w-full h-full teMinust-black bg-brand-background flex flex-col justify-between select-none">
+    <main className="w-full h-full bg-brand-background rounded-3xl overflow-hidden flex flex-col justify-between select-none">
       {/* Header com suporte a arraste de janela no Tauri */}
       <div data-tauri-drag-region className="flex w-full flex-row items-start justify-between">
         <div data-tauri-drag-region className="flex flex-row items-center gap-2 p-2">

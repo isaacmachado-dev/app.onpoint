@@ -8,7 +8,12 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "tauri:arch": "WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11 tauri dev"
+    "tauri:arch": "WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11 tauri dev",
+    "tauri:wayland": "WEBKIT_DISABLE_DMABUF_RENDERER=1 tauri dev",
+    "tauri:build": "rm -rf src-tauri/target/release/bundle/appimage && tauri build --bundles deb,rpm && bash scripts/fix-wayland-bundle.sh",
+    "tauri:build:wayland": "rm -rf src-tauri/target/release/bundle/appimage && tauri build --bundles deb,rpm && bash scripts/fix-wayland-bundle.sh",
+    "tauri:build:appimage": "bash scripts/build-appimage.sh",
+    "tauri:build:all": "bash scripts/build-appimage.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
