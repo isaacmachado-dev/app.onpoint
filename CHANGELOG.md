@@ -1,3 +1,25 @@
+## [0.2.1] - 2026-08-30
+
+### 🚀 Features
+
+- Add Tauri Store plugin for persistent schedule management and update UI components
+- *(ui)* Add reusable UI components including CupSodaIcon and FingerprintIcon
+- Integrate autostart functionality with Tauri plugin and update configuration module
+
+### 🐛 Bug Fixes
+
+- Name on package
+
+### 🚜 Refactor
+
+- Point module - separate components and logic into distinct files
+
+### 📚 Documentation
+
+- CHANGELOG.md
+- ROADMAP.md updated
+
+- *(release)* V0.1.1
 ## [0.2.0] - 2026-08-29
 
 ### 🚀 Features
@@ -12,12 +34,12 @@
 ## [0.1.2] - 2026-08-29
 
 ### ⚙️ Miscellaneous Tasks
-- *(release)* 0.1.2
 
+- *(release)* 0.1.2
 ## [0.1.1] - 2026-08-29
-- *(release)* V0.1.1
 
 ### ⚙️ Miscellaneous Tasks
+
 
 ## [0.0.1] - 2026-08-26
 
