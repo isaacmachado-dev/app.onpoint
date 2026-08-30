@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useEffect, useRef, useState } from "react";
@@ -48,6 +49,7 @@ export function usePointProgress() {
   const todayKey = new Date().toISOString().slice(0, 10);
   const storagePunchKey = `punches_${todayKey}`;
   const storageGaugeKey = `gauge_${todayKey}`;
+  const storageSnoozeKey = `snooze_${todayKey}`;
 
   const initialSchedule = getInitialScheduleForToday();
 
@@ -68,6 +70,21 @@ export function usePointProgress() {
       return saved !== null ? Number(saved) : 0;
     } catch {
       return 0;
+    }
+  });
+  const [snoozedUntil, setSnoozedUntil] = useState<number | null>(() => {
+    try {
+      const saved = localStorage.getItem(storageSnoozeKey);
+      if (saved !== null) {
+        const timestamp = Number(saved);
+        if (timestamp > Date.now()) {
+          return timestamp;
+        }
+        localStorage.removeItem(storageSnoozeKey);
+      }
+      return null;
+    } catch {
+      return null;
     }
   });
   const [isDraining, setIsDraining] = useState<boolean>(false);
@@ -120,6 +137,19 @@ export function usePointProgress() {
       const now = new Date();
       setRealTime(getFormattedTime());
 
+      // Se houver adiamento (snooze), verifica se o tempo expirou
+      setSnoozedUntil((prev) => {
+        if (prev !== null && Date.now() >= prev) {
+          try {
+            localStorage.removeItem(storageSnoozeKey);
+          } catch (e) {
+            console.error(e);
+          }
+          return null;
+        }
+        return prev;
+      });
+
       // Se estiver em teste manual ou esvaziando, não sobrescreve pelo relógio
       if (isManualTest || !hasScheduleToday || shifts.length === 0 || isDraining) return;
 
@@ -168,7 +198,7 @@ export function usePointProgress() {
     updateProgress();
     const timer = setInterval(updateProgress, 1000);
     return () => clearInterval(timer);
-  }, [shifts, completedPunches, isDraining, storageGaugeKey, hasScheduleToday, isManualTest]);
+  }, [shifts, completedPunches, isDraining, storageGaugeKey, storageSnoozeKey, hasScheduleToday, isManualTest]);
 
   // 3. Ação de Bater Ponto
   const handlePunch = async () => {
@@ -178,6 +208,14 @@ export function usePointProgress() {
       await openUrl(punchUrl);
     } catch {
       window.open(punchUrl, "_blank");
+    }
+
+    // Limpa adiamento ao bater ponto
+    setSnoozedUntil(null);
+    try {
+      localStorage.removeItem(storageSnoozeKey);
+    } catch (e) {
+      console.error(e);
     }
 
     // Dispara a animação de confetes / splash
@@ -222,12 +260,37 @@ export function usePointProgress() {
     }, 40);
   };
 
+  // 4. Ação de Adiar (Lembrar daqui X minutos)
+  const handleSnooze = async (minutes = 5) => {
+    const until = Date.now() + minutes * 60 * 1000;
+    setSnoozedUntil(until);
+    try {
+      localStorage.setItem(storageSnoozeKey, String(until));
+    } catch (e) {
+      console.error(e);
+    }
+
+    try {
+      const appWindow = getCurrentWindow();
+      await appWindow.hide();
+    } catch (error) {
+      console.error("Failed to hide window on snooze:", error);
+    }
+  };
+
   // Métodos de Teste / Simulação
   const testSimulatePunch = (punchCount: number) => {
     setIsManualTest(true);
     if (!hasScheduleToday || shifts.length === 0) {
       setShifts(DEFAULT_SHIFTS);
       setHasScheduleToday(true);
+    }
+
+    setSnoozedUntil(null);
+    try {
+      localStorage.removeItem(storageSnoozeKey);
+    } catch (e) {
+      console.error(e);
     }
 
     const isFinal = punchCount >= 4;
@@ -253,6 +316,12 @@ export function usePointProgress() {
       setShifts(DEFAULT_SHIFTS);
       setHasScheduleToday(true);
     }
+    setSnoozedUntil(null);
+    try {
+      localStorage.removeItem(storageSnoozeKey);
+    } catch (e) {
+      console.error(e);
+    }
     setGaugeValue(100);
     try {
       localStorage.setItem(storageGaugeKey, "100");
@@ -266,6 +335,12 @@ export function usePointProgress() {
     if (!hasScheduleToday || shifts.length === 0) {
       setShifts(DEFAULT_SHIFTS);
       setHasScheduleToday(true);
+    }
+    setSnoozedUntil(null);
+    try {
+      localStorage.removeItem(storageSnoozeKey);
+    } catch (e) {
+      console.error(e);
     }
     
     let current = 0;
@@ -285,17 +360,35 @@ export function usePointProgress() {
     setIsManualTest(false);
     setCompletedPunches(0);
     setGaugeValue(0);
+    setSnoozedUntil(null);
     try {
       localStorage.removeItem(storagePunchKey);
       localStorage.removeItem(storageGaugeKey);
+      localStorage.removeItem(storageSnoozeKey);
     } catch (e) {
       console.error(e);
     }
   };
 
+  const isSnoozed = snoozedUntil !== null && Date.now() < snoozedUntil;
   const isAllCompleted = hasScheduleToday && shifts.length > 0 && completedPunches >= shifts.length;
   const currentShift = !isAllCompleted && hasScheduleToday && shifts.length > 0 ? shifts[completedPunches] : null;
-  const isReadyToPunch = !isAllCompleted && hasScheduleToday && gaugeValue >= 100 && !isDraining;
+  const isReadyToPunch = !isAllCompleted && hasScheduleToday && gaugeValue >= 100 && !isDraining && !isSnoozed;
+
+  // Ao entrar em estado de pronto para bater ponto, garante foco e exibição da janela
+  useEffect(() => {
+    if (isReadyToPunch) {
+      try {
+        const appWindow = getCurrentWindow();
+        appWindow.show().then(() => {
+          appWindow.unminimize().catch(() => {});
+          appWindow.setFocus().catch(() => {});
+        }).catch(() => {});
+      } catch {
+        // Ignora caso não esteja no Tauri
+      }
+    }
+  }, [isReadyToPunch]);
 
   const totalDayPercentage = hasScheduleToday && shifts.length > 0
     ? Math.min(
@@ -312,9 +405,12 @@ export function usePointProgress() {
     gaugeValue,
     isReadyToPunch,
     isAllCompleted,
+    isSnoozed,
+    snoozedUntil,
     currentShift,
     totalDayPercentage,
     handlePunch,
+    handleSnooze,
     testSimulatePunch,
     testTriggerReadyToPunch,
     testSimulateGrowth,

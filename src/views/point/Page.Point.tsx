@@ -1,5 +1,6 @@
 import { FingerprintIcon } from "@/components/ui/fingerprint";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Clock } from "lucide-react";
 import { useState } from "react";
 import { PointProgressBar } from "./PointProgressBar";
 import { PointWidget } from "./PointWidget";
@@ -22,6 +23,7 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
     currentShift,
     totalDayPercentage,
     handlePunch,
+    handleSnooze,
   } = usePointProgress();
 
   const handleDrag = async (e: React.MouseEvent) => {
@@ -96,6 +98,16 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
               </button>
             </div>
           </div>
+
+          {/* Botão Lembrar daqui 5 minutos */}
+          <button
+            type="button"
+            onClick={() => handleSnooze(5)}
+            className="text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 py-2 px-4 rounded-full transition-all duration-150 cursor-pointer flex items-center gap-1.5 active:scale-95 mt-1"
+          >
+            <Clock className="w-3.5 h-3.5 text-brand-secondary" />
+            <span>Lembrar daqui 5 minutos</span>
+          </button>
         </div>
 
         {/* Rodapé informativo */}
