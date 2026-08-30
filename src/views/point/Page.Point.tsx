@@ -7,9 +7,13 @@ import { usePointProgress } from "./usePointProgress";
 
 interface PagePointProps {
   onNavigateToConfiguration?: () => void;
+  pointProgress?: ReturnType<typeof usePointProgress>;
 }
-export default function PagePoint({ onNavigateToConfiguration }: PagePointProps) {
+
+export default function PagePoint({ onNavigateToConfiguration, pointProgress: externalPointProgress }: PagePointProps) {
   const [isPressingFingerprint, setIsPressingFingerprint] = useState(false);
+  const internalPointProgress = usePointProgress();
+  const pointProgress = externalPointProgress || internalPointProgress;
 
   const {
     realTime,
@@ -23,7 +27,7 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
     totalDayPercentage,
     handlePunch,
     handleSnooze,
-  } = usePointProgress();
+  } = pointProgress;
 
   const handleDrag = async (e: React.MouseEvent) => {
     if (e.button !== 0) return;

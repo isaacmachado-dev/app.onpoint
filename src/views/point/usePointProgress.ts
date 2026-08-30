@@ -1,4 +1,4 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { hidePopupWindow, resetPopupWindowLevel, triggerPopupWindow } from "@/lib/windowPopup";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useEffect, useRef, useState } from "react";
@@ -127,6 +127,13 @@ export function usePointProgress() {
     };
 
     loadData();
+
+    window.addEventListener("schedules-updated", loadData);
+    window.addEventListener("storage", loadData);
+    return () => {
+      window.removeEventListener("schedules-updated", loadData);
+      window.removeEventListener("storage", loadData);
+    };
   }, []);
 
   const [isManualTest, setIsManualTest] = useState<boolean>(false);
@@ -210,6 +217,9 @@ export function usePointProgress() {
       window.open(punchUrl, "_blank");
     }
 
+    // Desativa pop-up always on top ao bater ponto
+    await resetPopupWindowLevel();
+
     // Limpa adiamento ao bater ponto
     setSnoozedUntil(null);
     try {
@@ -271,8 +281,7 @@ export function usePointProgress() {
     }
 
     try {
-      const appWindow = getCurrentWindow();
-      await appWindow.hide();
+      await hidePopupWindow();
     } catch (error) {
       console.error("Failed to hide window on snooze:", error);
     }
@@ -281,6 +290,7 @@ export function usePointProgress() {
   // Métodos de Teste / Simulação
   const testSimulatePunch = (punchCount: number) => {
     setIsManualTest(true);
+    resetPopupWindowLevel().catch(() => {});
     if (!hasScheduleToday || shifts.length === 0) {
       setShifts(DEFAULT_SHIFTS);
       setHasScheduleToday(true);
@@ -328,6 +338,7 @@ export function usePointProgress() {
     } catch (e) {
       console.error(e);
     }
+    triggerPopupWindow().catch(() => {});
   };
 
   const testSimulateGrowth = () => {
@@ -358,6 +369,7 @@ export function usePointProgress() {
 
   const testResetDay = () => {
     setIsManualTest(false);
+    resetPopupWindowLevel().catch(() => {});
     setCompletedPunches(0);
     setGaugeValue(0);
     setSnoozedUntil(null);
@@ -375,18 +387,14 @@ export function usePointProgress() {
   const currentShift = !isAllCompleted && hasScheduleToday && shifts.length > 0 ? shifts[completedPunches] : null;
   const isReadyToPunch = !isAllCompleted && hasScheduleToday && gaugeValue >= 100 && !isDraining && !isSnoozed;
 
-  // Ao entrar em estado de pronto para bater ponto, garante foco e exibição da janela
+  // Ao entrar em estado de pronto para bater ponto, faz a janela subir na tela em estilo pop-up modal
   useEffect(() => {
     if (isReadyToPunch) {
-      try {
-        const appWindow = getCurrentWindow();
-        appWindow.show().then(() => {
-          appWindow.unminimize().catch(() => {});
-          appWindow.setFocus().catch(() => {});
-        }).catch(() => {});
-      } catch {
-        // Ignora caso não esteja no Tauri
-      }
+      triggerPopupWindow().catch((err) => {
+        console.error("Erro ao abrir pop-up da janela:", err);
+      });
+    } else {
+      resetPopupWindowLevel().catch(() => {});
     }
   }, [isReadyToPunch]);
 

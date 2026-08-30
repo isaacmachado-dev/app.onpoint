@@ -1,8 +1,9 @@
 import PageCalendar from "@/views/calendar/Page.Calendar";
 import PageConfiguration from "@/views/configuration/Page.Configuration";
 import PagePoint from "@/views/point/Page.Point";
+import { usePointProgress } from "@/views/point/usePointProgress";
 import { Calendar, FingerprintPattern, type LucideIcon, Settings } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type View = "ponto" | "calendario" | "configuracoes";
 
@@ -20,6 +21,16 @@ const NAV_TABS: NavTab[] = [
 
 export default function Navbar() {
   const [currentView, setCurrentView] = useState<View>("ponto");
+  const pointProgress = usePointProgress();
+  const { isReadyToPunch } = pointProgress;
+
+  // Quando o horário chegar e a janela subir em pop-up, garante que a tela cheia de bater ponto apareça
+  useEffect(() => {
+    if (isReadyToPunch) {
+      setCurrentView("ponto");
+    }
+  }, [isReadyToPunch]);
+
   const activeIndex = NAV_TABS.findIndex((tab) => tab.id === currentView);
 
   return (
@@ -27,7 +38,10 @@ export default function Navbar() {
       {/* Conteúdo Central alternável de acordo com a aba ativa */}
       <div className="flex-1 flex flex-col items-center justify-center px-4">
         {currentView === "ponto" && (
-          <PagePoint onNavigateToConfiguration={() => setCurrentView("configuracoes")} />
+          <PagePoint
+            pointProgress={pointProgress}
+            onNavigateToConfiguration={() => setCurrentView("configuracoes")}
+          />
         )}
 
         {currentView === "calendario" && <PageCalendar />}
