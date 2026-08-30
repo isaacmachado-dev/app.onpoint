@@ -68,6 +68,7 @@ jobs:
 
           install -Dm755 "$APPIMAGE" "$ROOT/usr/bin/onpoint.AppImage"
           install -Dm644 "$ICON" "$ROOT/usr/share/icons/hicolor/128x128/apps/onpoint.png"
+          mkdir -p "$ROOT/usr/share/applications"
           cat > "$ROOT/usr/share/applications/onpoint.desktop" <<EOF
           [Desktop Entry]
           Name=onPoint
