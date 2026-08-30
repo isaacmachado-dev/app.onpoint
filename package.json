@@ -28,7 +28,7 @@
     "lucide-react": "^1.34.0",
     "motion": "^13.1.1",
     "react-day-picker": "^10.0.1",
-    "reac/home/moonlight/Downloads/onpoint.png-ts-liquid-gauge": "^0.1.0",
+    "react-ts-liquid-gauge": "^0.1.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
     "tailwindcss-animated": "^2.1.0",
