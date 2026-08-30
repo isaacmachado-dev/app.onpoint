@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BIN="$ROOT/src-tauri/target/release/onPoint"
-# Busca dinâmica do .desktop no bundle (deb/appimage), independente da versão (0.2.5, 0.2.8, 0.2.8...)
+# Busca dinâmica do .desktop no bundle (deb/appimage), independente da versão (0.2.5, 0.3.0, 0.3.0...)
 DESKTOP_SRC="$(find "$ROOT/src-tauri/target/release/bundle" -name "onPoint.desktop" 2>/dev/null | head -n 1 || true)"
 
 if [[ "${1:-}" == "--uninstall" ]]; then
