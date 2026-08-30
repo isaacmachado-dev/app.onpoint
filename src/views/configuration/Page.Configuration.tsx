@@ -1,12 +1,16 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LazyStore } from "@tauri-apps/plugin-store";
+import { enable, disable, isEnabled } from "@tauri-apps/plugin-autostart";
 import { Plus, SquarePen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ButtonToggle } from "./Button.Toggle";
 import ModalHour, { ScheduleItem } from "./Modal.Hour";
 
+const AUTOSTART_KEY = "autostart";
+
 export default function PageConfiguration() {
   const [ativo, setAtivo] = useState(false);
+  const [autostartLoading, setAutostartLoading] = useState(true);
   const [modalContainerHour, setModalContainerHour] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ScheduleItem | null>(null);
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
@@ -42,6 +46,56 @@ export default function PageConfiguration() {
 
     loadSchedules();
   }, []);
+
+  // Carrega o estado real do autostart ao montar o componente
+  useEffect(() => {
+    const loadAutostart = async () => {
+      try {
+        const store = new LazyStore("settings.json");
+        const stored = await store.get<boolean>(AUTOSTART_KEY);
+        const enabled = await isEnabled();
+        const value = stored ?? enabled;
+        setAtivo(value);
+
+        // Sincroniza o estado real com o valor persistido
+        if (value && !enabled) {
+          await enable();
+        } else if (!value && enabled) {
+          await disable();
+        }
+      } catch (err) {
+        console.warn("Autostart não disponível:", err);
+      } finally {
+        setAutostartLoading(false);
+      }
+    };
+
+    loadAutostart();
+  }, []);
+
+  const handleToggleAutostart = async (checked: boolean) => {
+    setAtivo(checked);
+
+    // Persiste a preferência
+    try {
+      const store = new LazyStore("settings.json");
+      await store.set(AUTOSTART_KEY, checked);
+      await store.save();
+    } catch (err) {
+      console.warn("Falha ao salvar autostart no Tauri Store:", err);
+    }
+
+    // Aplica no sistema operacional
+    try {
+      if (checked) {
+        await enable();
+      } else {
+        await disable();
+      }
+    } catch (err) {
+      console.error("Falha ao alterar autostart:", err);
+    }
+  };
 
   const fecharJanela = async () => {
     try {
@@ -108,7 +162,8 @@ export default function PageConfiguration() {
             <ButtonToggle
               label="Inicializar ao ligar o sistema"
               checked={ativo}
-              onChange={setAtivo}
+              onChange={handleToggleAutostart}
+              disabled={autostartLoading}
               activeColorClass="bg-brand-secondary"
             />
           </div>

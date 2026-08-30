@@ -1,6 +1,8 @@
 # Módulo de Configurações (`src/views/configuration`)
 
-Este módulo é responsável pelo gerenciamento de preferências e configurações do aplicativo **onPoint**, incluindo inicialização com o sistema operacional, definição e edição de escalas/turnos de trabalho, seleção inteligente de dias da semana e integração com o sistema de arquivos via Tauri Store.
+Este módulo é responsável pelo gerenciamento de preferências e configurações do aplicativo **onPoint**, incluindo inicialização com o sistema operacional (autostart), definição e edição de escalas/turnos de trabalho, seleção inteligente de dias da semana e integração com o sistema de arquivos via Tauri Store.
+
+> **Regra de Autostart (baseado na configuração do app):** O estado de "Inicializar ao ligar o sistema" é sempre a **fonte de verdade (single source of truth)** a configuração persistida em `settings.json` (Tauri Store). O toggle apenas lê/escreve essa chave e o estado real do SO é sincronizado a partir dela — nunca o contrário.
 
 ---
 
@@ -24,7 +26,7 @@ src/views/configuration/
 View principal exibida quando a aba **Configurações** está ativa na navegação central.
 
 #### Responsabilidades:
-- Controla a flag de inicialização automática ao ligar o sistema.
+- **Autostart config-driven:** Lê a chave `autostart` do Tauri Store (`settings.json`) ao montar e sincroniza o estado real do SO via `tauri-plugin-autostart`. Ao alternar o toggle, persiste a preferência na configuração do app e habilita/desabilita o autostart no sistema.
 - Lista as escalas e horários cadastrados (ex.: `Segunda a Sexta`, `Finais de semana`) com ações de edição e exclusão.
 - Aciona a abertura do modal de configuração de horários (`ModalHour`).
 - Executa o fechamento completo do aplicativo via Tauri Window API (`appWindow.close()`).
@@ -32,10 +34,15 @@ View principal exibida quando a aba **Configurações** está ativa na navegaç�
 #### Estados Internos:
 | Estado | Tipo | Descrição |
 | :--- | :--- | :--- |
-| `ativo` | `boolean` | Flag indicando se a inicialização com o sistema está habilitada |
+| `ativo` | `boolean` | Flag indicando se a inicialização com o sistema está habilitada (espelha a chave `autostart` da config do app) |
+| `autostartLoading` | `boolean` | `true` enquanto o estado real de autostart é lido/resolve do SO (desabilita o toggle nesse meio tempo) |
 | `modalContainerHour` | `boolean` | Controla a visibilidade do modal de definição de horários |
 | `editingSchedule` | `ScheduleItem \| null` | Escala selecionada para edição (ou `null` para novo cadastro) |
 | `schedules` | `ScheduleItem[]` | Lista de escalas cadastradas salvas no Tauri Store e localStorage |
+
+#### Fluxo de Autostart (config → SO)
+1. **Mount** (`loadAutostart`): `store.get("autostart")` é a fonte de verdade; se divergir de `isEnabled()` do SO, aplica `enable()`/`disable()` para igualar.
+2. **Toggle** (`handleToggleAutostart`): grava `autostart` no Tauri Store e executa `enable()`/`disable()` do `@tauri-apps/plugin-autostart`.
 
 ---
 
@@ -101,6 +108,30 @@ Componente acessível de switch/toggle com suporte a animação deslizante e fee
 | `checked` | `boolean` | Sim | Estado atual do toggle |
 | `onChange` | `(checked: boolean) => void` | Sim | Callback disparado ao alternar o valor |
 | `disabled` | `boolean` | Não | Desativa interações quando `true` |
+
+---
+
+---
+
+## Integração Backend (Rust / Tauri) — Autostart
+
+O toggle depende do plugin oficial **`tauri-plugin-autostart`** registrado no binário Rust.
+
+### Registro (`src-tauri/src/lib.rs`)
+```rust
+use tauri_plugin_autostart::MacosLauncher;
+
+.plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
+```
+- `MacosLauncher::LaunchAgent`: modo padrão no macOS (inicializa o app em segundo plano no login).
+- `None`: sem argumentos extras de linha de comando no autostart.
+
+### Capacidade (`src-tauri/capabilities/default.json`)
+A permissão `autostart:default` libera as chamadas IPC `enable`, `disable` e `isEnabled` para a janela `main`.
+
+### Dependências
+- **Rust** (`Cargo.toml`): `tauri-plugin-autostart = "2"`
+- **Frontend** (`package.json`): `@tauri-apps/plugin-autostart` (^2) — expõe `isEnabled()`, `enable()`, `disable()`.
 
 ---
 
