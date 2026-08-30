@@ -20,16 +20,16 @@ mostrar/ocultar a janela e encerrar o app, mesmo com a janela fechada.
 
 ## Assets
 - `src-tauri/icons/tray.png` — PNG 32x32 dedicado ao tray (gerado a partir de `32x32.png`).
-- `src-tauri/icons/_source.svg` — **fonte canônica** `1024x1024` (`onPoint.svg` — elipse `#ACEBF0` + traços `#25586A`). Todos os PNGs/ICO/ICNS derivam dela via `npx tauri icon`.
+- `src-tauri/icons/_source.svg` — **fonte canônica** `1024x1024` (`onpoint.svg` — elipse `#ACEBF0` + traços `#25586A`). Todos os PNGs/ICO/ICNS derivam dela via `npx tauri icon`.
 
 ## Branding canônico — por que o logo não pegava em todos os sistemas
 Diagnóstico 2026-08-30:
-1. **Duas marcas divergentes:** `public/onPoint.svg` (elipse clara canônica) vs `src-tauri/icons/_source.svg` antigo (gradiente indigo `#6366f1→#312e81`). O bundle nativo usava indigo enquanto a UI web usava claro — sensação de "não aplicou".
-2. **Favicon fantasma:** `index.html:5` referenciava `/vite.svg` inexistente (template Vite não limpo) → 404 no webview; alguns WMs usam favicon como fallback de window icon. Fixado para `/onPoint.svg` + `<title>onPoint</title>`.
+1. **Duas marcas divergentes:** `public/onpoint.svg` (elipse clara canônica) vs `src-tauri/icons/_source.svg` antigo (gradiente indigo `#6366f1→#312e81`). O bundle nativo usava indigo enquanto a UI web usava claro — sensação de "não aplicou".
+2. **Favicon fantasma:** `index.html:5` referenciava `/vite.svg` inexistente (template Vite não limpo) → 404 no webview; alguns WMs usam favicon como fallback de window icon. Fixado para `/onpoint.svg` + `<title>onPoint</title>`.
 3. **Bundle Linux incompleto:** `tauri.conf.json:28` sem `bundle.category/publisher/shortDescription` → `.desktop` gerado com `Categories=` vazio e `Comment=A Tauri App` genérico (filtrado em GNOME Software/KDE Discover). Corrigido: `category=Utility`, `publisher=Isaac Machado (https://isaacmachado.com.br)`, `shortDescription/longDescription` → `Categories=Utility;` e `Comment` útil.
-4. **Case mismatch:** CI `.github/workflows/build.yml:70` instalava `onpoint.png` lowercase com `Icon=onpoint`, enquanto `.deb` usa `onPoint.png` Pascal (`Icon=onPoint`). FS case-sensitive quebrava ícone no pacote pacman. Normalizado para `onPoint` Pascal em workflow + `scripts/install-arch.sh:67`.
+4. **Case mismatch:** CI `.github/workflows/build.yml:70` instalava `onpoint.png` lowercase com `Icon=onpoint`, enquanto `.deb` usa `onpoint.png` Pascal (`Icon=onPoint`). FS case-sensitive quebrava ícone no pacote pacman. Normalizado para `onPoint` Pascal em workflow + `scripts/install-arch.sh:67`.
 5. **`tray.png` divergente:** `32x32.png` (963B canônico) vs `tray.png` (1069B indigo) — `TrayIconBuilder` em `src-tauri/src/lib.rs:39` embarcava logo errado no tray. Sincronizado: `tray.png` agora é cópia de `32x32.png`.
-6. **Sem SVG escalável:** `_source.svg` indigo não era canônico, e `.deb` oficial não incluía `hicolor/scalable`. Instalador local `install-arch.sh` já instalava `scalable/onPoint.svg`; CI agora usa Pascal e descrição correta. Para hi-DPI, o SVG canônico garante vetor nítido.
+6. **Sem SVG escalável:** `_source.svg` indigo não era canônico, e `.deb` oficial não incluía `hicolor/scalable`. Instalador local `install-arch.sh` já instalava `scalable/onpoint.svg`; CI agora usa Pascal e descrição correta. Para hi-DPI, o SVG canônico garante vetor nítido.
 
 ## Garantia no Ubuntu (GNOME)
 O Tauri v2 renderiza o tray via **libappindicator**. Para o ícone aparecer no Ubuntu:
@@ -49,9 +49,9 @@ O Tauri v2 renderiza o tray via **libappindicator**. Para o ícone aparecer no U
 
 ## Ícones multiplataforma (bundle)
 - `npx tauri icon <fonte.png>` regenera **todo** o conjunto (`16x16`…`512x512`, `128x128@2x`,
-  `icon.icns`, `icon.ico`, `icon.png`, além de iOS/Android/Square/Store) a partir de UMA fonte PNG `1024x1024`, garantindo tamanhos/formas consistentes. Este é o fix canônico quando o ícone some no launcher do Linux (.deb/AppImage/Arch). Fonte atual: `onPoint.svg` `1024x1024` → export PNG → `tauri icon`.
+  `icon.icns`, `icon.ico`, `icon.png`, além de iOS/Android/Square/Store) a partir de UMA fonte PNG `1024x1024`, garantindo tamanhos/formas consistentes. Este é o fix canônico quando o ícone some no launcher do Linux (.deb/AppImage/Arch). Fonte atual: `onpoint.svg` `1024x1024` → export PNG → `tauri icon`.
 - `tauri.conf.json:28 → bundle.icon` lista explícita `16,24,32,48,64,128,128@2x,256,512(icon.png),icns,ico` — cobre hicolor completo. `publisher/category/shortDescription` garantem `.desktop` correto em Linux.
-- `src-tauri/icons/_source.svg` `1024x1024` canônico (onPoint) é instalado como `hicolor/scalable/apps/onPoint.svg` por `scripts/install-arch.sh:67` e garante nítidez hi-DPI; `.deb` oficial do Tauri usa PNGs high-res como fallback.
+- `src-tauri/icons/_source.svg` `1024x1024` canônico (onPoint) é instalado como `hicolor/scalable/apps/onpoint.svg` por `scripts/install-arch.sh:67` e garante nítidez hi-DPI; `.deb` oficial do Tauri usa PNGs high-res como fallback.
 - `tray.png` é asset separado (não regerado por `tauri icon`) — **sincronizado** com `32x32.png` canônico após diagnóstico; preservar em futuras regenerações (`cp 32x32.png tray.png`).
 - **RGBA obrigatório (tray-icon v0.24.2):** `tauri::generate_context!()` (`src-tauri/src/lib.rs:82`) valida que **todo** ícone listado em `bundle.icon` é `RGBA` 8-bit. `npx tauri icon` otimiza `16x16/24x24/48x48` para **paleta (P/colormap)** via `pngquant` — isso panica em compile time `icon ... is not RGBA`. Fix: `python3 -c "from PIL import Image; Image.open(p).convert('RGBA').save(p)"` nos 3 arquivos; tamanhos ficam ~459/697/1257B e `file` passa a `8-bit/color RGBA`. Verificar com `file src-tauri/icons/*.png` e `cargo check` antes de buildar.
 

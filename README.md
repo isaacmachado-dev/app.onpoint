@@ -1,7 +1,7 @@
 # onPoint
 
 <p align="center">
-  <img src="public/onPoint.svg" alt="onPoint Logo" width="96" height="96" />
+  <img src="public/onpoint.svg" alt="onPoint Logo" width="96" height="96" />
 </p>
 
 > Bata o ponto no horário certo. Sem esquecer.</strong><br />
