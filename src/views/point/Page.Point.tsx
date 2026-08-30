@@ -1,4 +1,5 @@
 import { FingerprintIcon } from "@/components/ui/fingerprint";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
 import { PointProgressBar } from "./PointProgressBar";
 import { PointWidget } from "./PointWidget";
@@ -7,7 +8,6 @@ import { usePointProgress } from "./usePointProgress";
 interface PagePointProps {
   onNavigateToConfiguration?: () => void;
 }
-
 export default function PagePoint({ onNavigateToConfiguration }: PagePointProps) {
   const [isPressingFingerprint, setIsPressingFingerprint] = useState(false);
 
@@ -24,18 +24,37 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
     handlePunch,
   } = usePointProgress();
 
+  const handleDrag = async (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("button")) return;
+    try {
+      await getCurrentWindow().startDragging();
+    } catch (error) {
+      console.error("Failed to start dragging:", error);
+    }
+  };
+
   if (isReadyToPunch) {
     return (
       <div 
         className="fixed inset-0 z-50 w-full h-full bg-brand-main text-white flex flex-col justify-between p-5 select-none"
       >
-        {/* Header com suporte a arraste */}
-        <div data-tauri-drag-region className="flex w-full items-center justify-between">
-          <div data-tauri-drag-region className="flex items-center gap-2 pointer-events-none">
+        {/* Header com suporte a arraste - startDragging para Windows */}
+        <div
+          data-tauri-drag-region
+          onMouseDown={handleDrag}
+          className="flex w-full items-center justify-between cursor-move"
+        >
+          <div
+            data-tauri-drag-region
+            onMouseDown={handleDrag}
+            className="flex items-center gap-2 pointer-events-none cursor-move"
+          >
             <img src="/onPoint.svg" alt="onPoint" className="w-8 h-8" />
             <span className="text-base font-bold text-white tracking-wide">onPoint</span>
           </div>
-          <span className="text-xs uppercase tracking-widest text-brand-secondary font-black bg-white/10 px-3 py-1 rounded-full">
+          <span className="text-xs uppercase tracking-widest text-brand-secondary font-black bg-white/10 px-3 py-1 rounded-full pointer-events-none">
             {realTime}
           </span>
         </div>
@@ -80,7 +99,7 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
         </div>
 
         {/* Rodapé informativo */}
-        <div className="w-full text-center">
+        <div className="w-full text-center pointer-events-none">
           <span className="text-[10px] text-white/50">
             Abre o sistema de ponto externo configurado.
           </span>
