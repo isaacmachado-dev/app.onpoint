@@ -8,6 +8,7 @@
     "opener:default",
     "core:window:allow-hide",
     "core:window:allow-close",
-    "store:default"
+    "store:default",
+    "autostart:default"
   ]
 }
