@@ -17,7 +17,7 @@ jobs:
           - platform: ubuntu-22.04
             args: "--bundles deb,appimage"
           - platform: windows-latest
-            args: ""
+            args: "--bundles nsis,msi"
           - platform: macos-latest
             args: ""
     runs-on: ${{ matrix.platform }}
@@ -33,6 +33,56 @@ jobs:
       - name: Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Cache WiX Toolset (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\AppData\Local\tauri\WixTools314
+          key: wix314-${{ runner.os }}-v1
+          restore-keys: |
+            wix314-${{ runner.os }}-
+
+      - name: Enable .NET 3.5 for WiX 3.14 (candle.exe)
+        if: matrix.platform == 'windows-latest'
+        shell: powershell
+        run: |
+          Write-Host "Enabling NetFx3 for WiX 3.14..."
+          try {
+            Enable-WindowsOptionalFeature -Online -FeatureName NetFx3 -All -NoRestart -ErrorAction Stop
+            Write-Host "NetFx3 enabled"
+          } catch {
+            Write-Host "Enable-WindowsOptionalFeature failed, trying DISM fallback: $_"
+            dism /online /Enable-Feature /FeatureName:NetFx3 /All /NoRestart
+          }
+          # Pre-warm WiX to avoid flaky download during tauri build
+          $wixUrl = "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip"
+          $wixDir = "$env:LOCALAPPDATA\tauri\WixTools314"
+          $wixZip = "$env:RUNNER_TEMP\wix314.zip"
+          if (-not (Test-Path "$wixDir\candle.exe")) {
+            Write-Host "Pre-downloading WiX 3.14..."
+            New-Item -ItemType Directory -Force -Path $wixDir | Out-Null
+            for ($i=1; $i -le 3; $i++) {
+              try {
+                Invoke-WebRequest -Uri $wixUrl -OutFile $wixZip -UseBasicParsing
+                Expand-Archive -Path $wixZip -DestinationPath $wixDir -Force
+                Write-Host "WiX extracted to $wixDir"
+                break
+              } catch {
+                Write-Host "Attempt $i failed: $_"
+                if ($i -eq 3) { throw }
+                Start-Sleep -Seconds 5
+              }
+            }
+          } else {
+            Write-Host "WiX cache hit at $wixDir"
+          }
+          Get-ChildItem $wixDir | Format-Table Name, Length
+
       - name: Linux deps
         if: matrix.platform == 'ubuntu-22.04'
         run: |
@@ -46,7 +96,7 @@ jobs:
         run: npm ci
 
       - name: Tauri build
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0.5.24
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -54,6 +104,8 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: v__VERSION__
+          releaseDraft: true
+          prerelease: false
           args: ${{ matrix.args }}
 
       # Arch Linux não tem target pacman nativo no CLI do Tauri:
