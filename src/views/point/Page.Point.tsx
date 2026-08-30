@@ -1,6 +1,5 @@
 import { FingerprintIcon } from "@/components/ui/fingerprint";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Clock } from "lucide-react";
 import { useState } from "react";
 import { PointProgressBar } from "./PointProgressBar";
 import { PointWidget } from "./PointWidget";
@@ -53,7 +52,7 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
             onMouseDown={handleDrag}
             className="flex items-center gap-2 pointer-events-none cursor-move"
           >
-            <img src="/onPoint.svg" alt="onPoint" className="w-8 h-8" />
+            <img src="/onpoint.svg" alt="onPoint" className="w-8 h-8" />
             <span className="text-base font-bold text-white tracking-wide">onPoint</span>
           </div>
           <span className="text-xs uppercase tracking-widest text-brand-secondary font-black bg-white/10 px-3 py-1 rounded-full pointer-events-none">
@@ -67,7 +66,7 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
             <h2 className="text-2xl font-black text-white text-center">
               {currentShift?.label}
             </h2>
-            <span className="text-xs font-bold text-white/90 bg-white/15 px-3 py-0.5 rounded-full">
+            <span className="text-xs font-bold text-white/90  px-3 py-0.5 rounded-full">
               Pré-definido: {currentShift?.time}
             </span>
           </div>
@@ -89,10 +88,10 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
               />
             </div>
 
-            <div className="flex flex-col items-center gap-1 mt-2">
+            <div className="flex flex-col items-center mt-4">
               <button
                 type="button"
-                className="bg-brand-secondary text-brand-main font-black text-xs py-2.5 px-8 rounded-full shadow-lg group-active:brightness-90 transition-all duration-150 cursor-pointer uppercase tracking-widest pointer-events-none"
+                className="bg-brand-secondary text-brand-main font-black text-xs py-2.5 px-8 rounded-full shadow-lg group-active:brightness-90 transition-all duration-150 cursor-pointer uppercase tracking-widest pointer-events-none group-hover:bg-brand-secondary/50"
               >
                 Bater ponto agora
               </button>
@@ -103,19 +102,18 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
           <button
             type="button"
             onClick={() => handleSnooze(5)}
-            className="text-xs font-semibold text-white/80 hover:text-white hover:bg-white/10 py-2 px-4 rounded-full transition-all duration-150 cursor-pointer flex items-center gap-1.5 active:scale-95 mt-1"
+            className="text-xs font-semibold text-white bg-white/10 hover:bg-white/50  py-2 px-4 rounded-full transition-all duration-150 cursor-pointer flex items-center gap-1.5 tracking-widest"
           >
-            <Clock className="w-3.5 h-3.5 text-brand-secondary" />
             <span>Lembrar daqui 5 minutos</span>
           </button>
         </div>
 
         {/* Rodapé informativo */}
-        <div className="w-full text-center pointer-events-none">
+        {/* <div className="w-full text-center pointer-events-none">
           <span className="text-[10px] text-white/50">
             Abre o sistema de ponto externo configurado.
           </span>
-        </div>
+        </div> */}
       </div>
     );
   }
