@@ -3,6 +3,7 @@ name = "onpoint"
 version = "0.2.6"
 description = "onPoint - gerenciamento de ponto e frequencia com tray integrado"
 authors = ["Isaac Machado <contato@isaacmachado.com.br>"]
+license = "Proprietary"
 edition = "2021"
 homepage = "https://isaacmachado.com.br"
 repository = "https://github.com/isaacmachado-dev/app.onpoint"

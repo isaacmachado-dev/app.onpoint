@@ -29,10 +29,11 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "publisher": "Isaac Machado",
+    "publisher": "Isaac Machado <contato@isaacmachado.com.br>",
     "category": "Utility",
     "copyright": "Copyright (c) 2026 Isaac Machado (https://isaacmachado.com.br)",
     "homepage": "https://isaacmachado.com.br",
+    "license": "Proprietary",
     "shortDescription": "Gerenciamento de ponto e frequencia",
     "longDescription": "onPoint - controle de jornada e frequencia com tray integrado e persistencia local.",
     "linux": {

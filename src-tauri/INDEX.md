@@ -55,6 +55,37 @@ O Tauri v2 renderiza o tray via **libappindicator**. Para o ícone aparecer no U
 - `tray.png` é asset separado (não regerado por `tauri icon`) — **sincronizado** com `32x32.png` canônico após diagnóstico; preservar em futuras regenerações (`cp 32x32.png tray.png`).
 - **RGBA obrigatório (tray-icon v0.24.2):** `tauri::generate_context!()` (`src-tauri/src/lib.rs:82`) valida que **todo** ícone listado em `bundle.icon` é `RGBA` 8-bit. `npx tauri icon` otimiza `16x16/24x24/48x48` para **paleta (P/colormap)** via `pngquant` — isso panica em compile time `icon ... is not RGBA`. Fix: `python3 -c "from PIL import Image; Image.open(p).convert('RGBA').save(p)"` nos 3 arquivos; tamanhos ficam ~459/697/1257B e `file` passa a `8-bit/color RGBA`. Verificar com `file src-tauri/icons/*.png` e `cargo check` antes de buildar.
 
+## Empacotamento Debian (.deb) - Diagnóstico GNOME Software "Potencialmente inseguro"
+
+**Sintoma (Image 1 - Ubuntu 22.04/24.04):** Ao abrir o `.deb` no "Central de Aplicativos" (GNOME Software) aparecia:
+- Banner laranja "Potencialmente inseguro - Esse pacote é fornecido por terceiros"
+- `Editor desconhecido` / `Licença unknown` / `Publicado Desconhecido`
+- Ícone cinza genérico (pizza) em vez do logo onPoint
+
+### Conceitos-chave
+
+1. **Banner laranja é INEVITÁVEL para .deb local.** GNOME Software exibe para *qualquer* `.deb` fora de `archive.ubuntu.com`. Só some via repositório apt com GPG / Snap Store / Flathub. Para GitHub Releases, permanece.
+2. **DEB `Maintainer` vs `Publisher`.** Tauri mapeia `bundle.publisher` → `Maintainer:` apenas se `Cargo.toml authors` vazio. Correção: `publisher` com email `Isaac Machado <contato@isaacmachado.com.br>` em `tauri.conf.json:32`.
+3. **AppStream `metainfo.xml` = identidade na loja.** GNOME lê `AppStream` em `/usr/share/metainfo/*.metainfo.xml` (copiado via `tauri.conf.json:43` `linux.deb.files`), não o `control`. Sem `metadata_license`/`project_license`/`launchable` correto, mostra `unknown` e ícone genérico.
+4. **Licença Proprietária.** `bundle.license` + `Cargo.toml license` = `Proprietary` → GNOME exibe "Proprietário" sem liberar MIT (ajuste a pedido).
+
+### Correções aplicadas (2026-08-30) - branch `develop`
+
+| Arquivo | Antes | Depois |
+|---|---|---|
+| `tauri.conf.json:32` `publisher` | `Isaac Machado` | `Isaac Machado <contato@isaacmachado.com.br>` |
+| `tauri.conf.json:36` `license` | *(ausente)* | `"Proprietary"` |
+| `Cargo.toml:6` `license` | *(ausente)* | `Proprietary` |
+| `bundle/com.moonlight.onPoint.metainfo.xml` | Sem `metadata_license`/`project_license`, `launchable` `onPoint.desktop` | Add `CC0-1.0`/`proprietary`, fix `launchable` → `com.moonlight.onPoint.desktop`, ícones `stock`+`cached` `onPoint`, `developer id` |
+
+### Validar próximo .deb
+
+```bash
+npm run tauri:build
+dpkg-deb -I src-tauri/target/release/bundle/deb/*.deb | grep Maintainer
+appstreamcli validate /usr/share/metainfo/com.moonlight.onPoint.metainfo.xml
+```
+
 ## Build do AppImage no Arch (linuxdeploy incompatível)
 
 O `npm run tauri build` falha **apenas** no passo AppImage com `failed to run linuxdeploy`.
