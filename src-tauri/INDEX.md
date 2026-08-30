@@ -53,6 +53,7 @@ O Tauri v2 renderiza o tray via **libappindicator**. Para o ícone aparecer no U
 - `tauri.conf.json:28 → bundle.icon` lista explícita `16,24,32,48,64,128,128@2x,256,512(icon.png),icns,ico` — cobre hicolor completo. `publisher/category/shortDescription` garantem `.desktop` correto em Linux.
 - `src-tauri/icons/_source.svg` `1024x1024` canônico (onPoint) é instalado como `hicolor/scalable/apps/onPoint.svg` por `scripts/install-arch.sh:67` e garante nítidez hi-DPI; `.deb` oficial do Tauri usa PNGs high-res como fallback.
 - `tray.png` é asset separado (não regerado por `tauri icon`) — **sincronizado** com `32x32.png` canônico após diagnóstico; preservar em futuras regenerações (`cp 32x32.png tray.png`).
+- **RGBA obrigatório (tray-icon v0.24.2):** `tauri::generate_context!()` (`src-tauri/src/lib.rs:82`) valida que **todo** ícone listado em `bundle.icon` é `RGBA` 8-bit. `npx tauri icon` otimiza `16x16/24x24/48x48` para **paleta (P/colormap)** via `pngquant` — isso panica em compile time `icon ... is not RGBA`. Fix: `python3 -c "from PIL import Image; Image.open(p).convert('RGBA').save(p)"` nos 3 arquivos; tamanhos ficam ~459/697/1257B e `file` passa a `8-bit/color RGBA`. Verificar com `file src-tauri/icons/*.png` e `cargo check` antes de buildar.
 
 ## Build do AppImage no Arch (linuxdeploy incompatível)
 
