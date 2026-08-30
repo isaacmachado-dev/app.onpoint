@@ -1,7 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "onPoint",
-  "version": "0.2.4",
+  "mainBinaryName": "onPoint",
+  "version": "0.2.6",
   "identifier": "com.moonlight.onPoint",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -28,10 +29,21 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "publisher": "DSOP",
+    "publisher": "Isaac Machado",
     "category": "Utility",
-    "shortDescription": "Gerenciamento de ponto e frequência",
-    "longDescription": "onPoint — controle de jornada e frequência com tray integrado e persistência local.",
+    "copyright": "Copyright (c) 2026 Isaac Machado (https://isaacmachado.com.br)",
+    "homepage": "https://isaacmachado.com.br",
+    "shortDescription": "Gerenciamento de ponto e frequencia",
+    "longDescription": "onPoint - controle de jornada e frequencia com tray integrado e persistencia local.",
+    "linux": {
+      "deb": {
+        "section": "utils",
+        "priority": "optional",
+        "files": {
+          "/usr/share/metainfo/com.moonlight.onPoint.metainfo.xml": "bundle/com.moonlight.onPoint.metainfo.xml"
+        }
+      }
+    },
     "icon": [
       "icons/16x16.png",
       "icons/24x24.png",

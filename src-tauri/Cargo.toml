@@ -1,9 +1,13 @@
 [package]
-name = "onPoint"
-version = "0.2.4"
-description = "onPoint — gerenciamento de ponto e frequência com tray integrado"
-authors = ["DSOP"]
+name = "onpoint"
+version = "0.2.6"
+description = "onPoint - gerenciamento de ponto e frequencia com tray integrado"
+authors = ["Isaac Machado <contato@isaacmachado.com.br>"]
 edition = "2021"
+homepage = "https://isaacmachado.com.br"
+repository = "https://github.com/isaacmachado-dev/app.onpoint"
+keywords = ["ponto", "frequencia", "tray", "tauri"]
+categories = ["office"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

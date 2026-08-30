@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.moonlight.onPoint</id>
+  <name>onPoint</name>
+  <summary>Gerenciamento de ponto e frequencia</summary>
+  <description>
+    <p>onPoint - controle de jornada e frequencia com tray integrado e persistencia local. Transforme a gestao de horarios em uma experiencia visual com liquid gauge, celebracoes e integracao com o sistema.</p>
+    <p>Funcionalidades: relogio 24h, liquid gauge com ondas senoidais, deteccao de folga, modo tela cheia para bater ponto, celebracoes com confete, suporte a 4 batidas diarias e tray persistente.</p>
+  </description>
+  <launchable type="desktop-id">onPoint.desktop</launchable>
+  <provides>
+    <id>onPoint.desktop</id>
+  </provides>
+  <icon type="stock">onPoint</icon>
+  <url type="homepage">https://isaacmachado.com.br</url>
+  <url type="bugtracker">https://github.com/isaacmachado-dev/app.onpoint/issues</url>
+  <url type="help">https://isaacmachado.com.br</url>
+  <developer_name>Isaac Machado</developer_name>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>ponto</keyword>
+    <keyword>frequencia</keyword>
+    <keyword>tray</keyword>
+    <keyword>produtividade</keyword>
+  </keywords>
+  <releases>
+    <release version="0.2.6" date="2026-08-30">
+      <description><p>Branding unificado, correcoes Wayland e empacotamento.</p></description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1" />
+</component>
