@@ -1,7 +1,9 @@
+import RocketIcon from "@/components/ui/rocket-icon";
+import { useUpdater } from "@/hooks/useUpdater";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { AlertTriangle, CheckCircle2, Download, ExternalLink, Heart, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle2, AlertTriangle, Download, RefreshCw, Rocket, ExternalLink } from "lucide-react";
-import { useUpdater } from "@/hooks/useUpdater";
 
 interface UpdateModalProps {
   onClose: () => void;
@@ -19,6 +21,12 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
     onClose();
   };
 
+ const handleOpenSite = (e: React.MouseEvent) => {
+  e.preventDefault();
+  const url = "https://isaacmachado.com.br/";
+  openUrl(url).catch(() => window.open(url, "_blank"));
+};
+
   return createPortal(
     <div
       className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-xs"
@@ -31,14 +39,6 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-brand-main">Atualizações</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={status === "downloading"}
-            className="text-gray-400 hover:text-gray-600 text-xs disabled:opacity-30 cursor-pointer"
-          >
-            ✕
-          </button>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -46,8 +46,7 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
           {status === "checking" && (
             <div className="flex flex-col items-center gap-3 py-4">
               <RefreshCw className="w-8 h-8 text-brand-main animate-spin" />
-              <p className="text-sm font-medium text-gray-700">Verificando atualizações…</p>
-              <p className="text-xs text-gray-400">v{currentVersion ?? "…"} • buscando no GitHub Releases</p>
+              <p className="text-sm font-medium text-gray-700">Checando atualizações…</p>
             </div>
           )}
 
@@ -58,7 +57,7 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
                 <CheckCircle2 className="w-7 h-7 text-green-600" />
               </div>
               <p className="text-sm font-bold text-gray-800">Você está na última versão!</p>
-              <p className="text-xs text-gray-500">v{currentVersion} • verificado agora</p>
+              <p className="text-xs text-gray-500">v{currentVersion}</p>
               <button
                 type="button"
                 onClick={onClose}
@@ -74,7 +73,7 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
             <div className="flex flex-col gap-3">
               <div className="bg-brand-background rounded-2xl p-3 flex items-start gap-3">
                 <div className="w-9 h-9 rounded-full bg-brand-main flex items-center justify-center shrink-0">
-                  <Rocket className="w-5 h-5 text-white" />
+                  <RocketIcon className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-gray-800">Nova versão disponível</p>
@@ -145,7 +144,7 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
                 onClick={restart}
                 className="mt-1 w-full bg-brand-main text-white py-2.5 rounded-full text-xs font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Rocket className="w-4 h-4" />
+                <RocketIcon className="w-4 h-4" />
                 Reiniciar agora
               </button>
               <button type="button" onClick={onClose} className="text-xs text-gray-500 hover:text-gray-700 cursor-pointer">
@@ -196,7 +195,15 @@ export default function UpdateModal({ onClose }: UpdateModalProps) {
           )}
         </div>
 
-        <p className="text-[10px] text-gray-400 text-center">Distribuído via GitHub Releases • Assinado com Ed25519</p>
+        <p className="text-[10px] text-purple-900 text-center flex flex-inline items-center gap-0.5 mx-auto">
+          Feito com 
+          <Heart className="text-purple-900" />
+          <span>por</span> 
+          <a href="https://isaacmachado.com.br/" className="text-purple-900 hover:underline" target="_blank" rel="noopener noreferrer" onClick={handleOpenSite}>
+          Isaac Machado
+          </a>
+        </p>
+
       </div>
     </div>,
     document.body

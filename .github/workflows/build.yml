@@ -16,8 +16,11 @@ jobs:
         include:
           - platform: ubuntu-22.04
             args: "--bundles deb,appimage"
+          # HOTFIX: MSI via WiX 3.14 (candle.exe) está quebrado no windows-latest (Server 2025)
+          # sem NetFx3 + download flaky. NSIS já gera setup.exe + updater .nsis.zip.
+          # Troca para nsis-only garante entrega da tag. Para reativar MSI veja comentário abaixo.
           - platform: windows-latest
-            args: "--bundles nsis,msi"
+            args: "--bundles nsis"
           - platform: macos-latest
             args: ""
     runs-on: ${{ matrix.platform }}
@@ -38,8 +41,8 @@ jobs:
         with:
           workspaces: src-tauri -> target
 
-      - name: Cache WiX Toolset (Windows)
-        if: matrix.platform == 'windows-latest'
+      - name: Cache WiX Toolset (Windows) — só para MSI
+        if: matrix.platform == 'windows-latest' && contains(matrix.args, 'msi')
         uses: actions/cache@v4
         with:
           path: C:\Users\runneradmin\AppData\Local\tauri\WixTools314
@@ -47,8 +50,10 @@ jobs:
           restore-keys: |
             wix314-${{ runner.os }}-
 
-      - name: Enable .NET 3.5 for WiX 3.14 (candle.exe)
-        if: matrix.platform == 'windows-latest'
+      # Mantido para quando reativar MSI (args --bundles nsis,msi).
+      # Com args=nsis este step é no-op / cache apenas.
+      - name: Enable .NET 3.5 for WiX 3.14 (candle.exe) — só necessário para MSI
+        if: matrix.platform == 'windows-latest' && contains(matrix.args, 'msi')
         shell: powershell
         run: |
           Write-Host "Enabling NetFx3 for WiX 3.14..."
@@ -59,7 +64,17 @@ jobs:
             Write-Host "Enable-WindowsOptionalFeature failed, trying DISM fallback: $_"
             dism /online /Enable-Feature /FeatureName:NetFx3 /All /NoRestart
           }
-          # Pre-warm WiX to avoid flaky download during tauri build
+          # Fallback extra: instala WiX do Chocolatey e exporta WIX env (Tauri respeita $WIX)
+          try {
+            choco install wixtoolset --version 3.14.1 -y --no-progress --force
+            $wixBin = "C:\Program Files (x86)\WiX Toolset v3.14\bin"
+            if (Test-Path $wixBin) {
+              "WIX=$wixBin" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+              Write-Host "WIX env set to $wixBin"
+              & "$wixBin\candle.exe" -? | Select-Object -First 5
+            }
+          } catch { Write-Host "choco WiX install skipped/failed: $_" }
+          # Pre-warm WiX cache usado pelo Tauri (LOCALAPPDATA\tauri\WixTools314)
           $wixUrl = "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip"
           $wixDir = "$env:LOCALAPPDATA\tauri\WixTools314"
           $wixZip = "$env:RUNNER_TEMP\wix314.zip"
@@ -81,7 +96,12 @@ jobs:
           } else {
             Write-Host "WiX cache hit at $wixDir"
           }
-          Get-ChildItem $wixDir | Format-Table Name, Length
+          Get-ChildItem $wixDir | Select-Object Name, Length | Format-Table -AutoSize
+          # Diagnóstico: tenta rodar candle se MSI for solicitado
+          if (Test-Path "$wixDir\candle.exe") {
+            & "$wixDir\candle.exe" -? | Select-Object -First 5
+            if ($LASTEXITCODE -ne 0) { Write-Host "::warning::candle.exe falhou - NetFx3 ainda ausente, build MSI vai falhar" }
+          }
 
       - name: Linux deps
         if: matrix.platform == 'ubuntu-22.04'
