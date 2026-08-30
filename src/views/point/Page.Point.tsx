@@ -22,10 +22,6 @@ export default function PagePoint({ onNavigateToConfiguration }: PagePointProps)
     currentShift,
     totalDayPercentage,
     handlePunch,
-    testSimulatePunch,
-    testTriggerReadyToPunch,
-    testSimulateGrowth,
-    testResetDay,
   } = usePointProgress();
 
   if (isReadyToPunch) {
