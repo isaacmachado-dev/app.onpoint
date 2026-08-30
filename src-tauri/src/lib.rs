@@ -4,6 +4,32 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn popup_window(app_handle: tauri::AppHandle) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_always_on_top(true);
+        let _ = window.set_focus();
+        let _ = window.request_user_attention(Some(tauri::UserAttentionType::Critical));
+    }
+}
+
+#[tauri::command]
+fn reset_popup_window(app_handle: tauri::AppHandle) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let _ = window.set_always_on_top(false);
+    }
+}
+
+#[tauri::command]
+fn hide_popup_window(app_handle: tauri::AppHandle) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let _ = window.set_always_on_top(false);
+        let _ = window.hide();
+    }
+}
+
 use tauri::{
     image::Image,
     menu::{Menu, MenuItem},
@@ -29,6 +55,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .setup(|app| {
             // Menu do tray: Mostrar / Sair
             let mostrar = MenuItem::with_id(app, "mostrar", "Mostrar", true, None::<&str>)?;
@@ -78,7 +106,7 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, popup_window, reset_popup_window, hide_popup_window])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

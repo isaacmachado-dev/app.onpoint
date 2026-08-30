@@ -14,6 +14,7 @@ src/views/configuration/
 ├── Modal.DatePicker.tsx   # Popover inteligente de seleção de dias da semana
 ├── Modal.Hour.tsx         # Modal de turnos renderizado via React createPortal
 ├── Modal.HourPicker.tsx   # Seletor de relógio 24h integrado com timepicker-ui-react
+├── UpdateModal.tsx        # Modal de auto-update (updater + portal z-[100])
 ├── Page.Configuration.tsx # View principal de listagem e gerenciamento de escalas
 └── INDEX.md               # Documentação técnica do módulo
 ```
@@ -111,27 +112,51 @@ Componente acessível de switch/toggle com suporte a animação deslizante e fee
 
 ---
 
+### 6. `UpdateModal` (`UpdateModal.tsx`) — Auto-update completo
+Modal premium para o fluxo **Checar atualizações** com `tauri-plugin-updater` (GitHub Releases) + `tauri-plugin-process`.
+
+#### Máquina de Estados (via `src/hooks/useUpdater.ts`)
+| Estado | UI | Ação |
+|---|---|---|
+| `checking` | Spinner `Loader2` + "Verificando…" | `check()` no `useEffect` ao abrir modal |
+| `up-to-date` | `CheckCircle2` verde + `vX.Y.Z` | Botão Fechar |
+| `available` | Card `Rocket` + `vAtual → vNova` + changelog (`body`) | "Baixar e instalar" → `downloadAndInstall(onProgress)` |
+| `downloading` | Barra `framer-motion` + `%` (Started/Progress/Finished) | bloqueia backdrop |
+| `ready` | "Pronto para instalar" | "Reiniciar agora" → `relaunch()` |
+| `error` | `AlertTriangle` + msg + "Tentar novamente" | fallback `openUrl(RELEASES_URL)` |
+
+#### Integração
+*   **Hook:** `useUpdater()` encapsula `check()` do `@tauri-apps/plugin-updater`, `getVersion()` e `openUrl()` do `opener`. Persistência opcional em `settings.json` se necessário.
+*   **Portal:** `createPortal(document.body)` `z-[100]` igual `ModalHour`, backdrop `bg-black/60 backdrop-blur-xs`.
+*   **Host:** `Page.Configuration.tsx:15` `showUpdateModal` → `<UpdateModal onClose>` substitui o placeholder `location.reload()`.
+*   **Fallback .deb:** Linux `.deb` não é patchável via updater — modal detecta ausência de `downloadAndInstall` e abre `https://github.com/isaacmachado-dev/app.onpoint/releases/latest` via `opener`.
+
 ---
 
-## Integração Backend (Rust / Tauri) — Autostart
+## Integração Backend (Rust / Tauri) — Autostart + Updater
 
 O toggle depende do plugin oficial **`tauri-plugin-autostart`** registrado no binário Rust.
 
-### Registro (`src-tauri/src/lib.rs`)
+### Registro (`src-tauri/src/lib.rs:55-57`)
 ```rust
 use tauri_plugin_autostart::MacosLauncher;
 
 .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
+.plugin(tauri_plugin_updater::Builder::new().build())
+.plugin(tauri_plugin_process::init())
 ```
-- `MacosLauncher::LaunchAgent`: modo padrão no macOS (inicializa o app em segundo plano no login).
-- `None`: sem argumentos extras de linha de comando no autostart.
 
-### Capacidade (`src-tauri/capabilities/default.json`)
-A permissão `autostart:default` libera as chamadas IPC `enable`, `disable` e `isEnabled` para a janela `main`.
+### Capacidade (`src-tauri/capabilities/default.json:22-24`)
+```json
+"permissions": ["store:default","autostart:default","updater:default","process:allow-restart"]
+```
+`updater:default` libera `check/download/install`; `process:allow-restart` libera `relaunch()`.
 
 ### Dependências
-- **Rust** (`Cargo.toml`): `tauri-plugin-autostart = "2"`
-- **Frontend** (`package.json`): `@tauri-apps/plugin-autostart` (^2) — expõe `isEnabled()`, `enable()`, `disable()`.
+- **Rust** (`Cargo.toml`): `tauri-plugin-autostart = "2"`, `tauri-plugin-updater = "2"`, `tauri-plugin-process = "2"`
+- **Frontend** (`package.json`): `@tauri-apps/plugin-autostart`, `@tauri-apps/plugin-updater`, `@tauri-apps/plugin-process` (^2)
+- **Config** (`tauri.conf.json:39,64`): `bundle.createUpdaterArtifacts:true` + `plugins.updater: {pubkey, endpoints:[.../latest.json]}` (assinatura Ed25519 `~/.tauri/onpoint.key` → Secret `TAURI_SIGNING_PRIVATE_KEY` no `build.yml:50`)
+- **CI** (`.github/workflows/build.yml:50`): `tauri-action@v0` lê `TAURI_SIGNING_PRIVATE_KEY` e publica `latest.json` + `.sig` no Release.
 
 ---
 

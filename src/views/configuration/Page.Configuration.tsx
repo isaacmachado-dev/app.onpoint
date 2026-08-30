@@ -1,10 +1,11 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { disable, enable, isEnabled } from "@tauri-apps/plugin-autostart";
 import { LazyStore } from "@tauri-apps/plugin-store";
-import { enable, disable, isEnabled } from "@tauri-apps/plugin-autostart";
 import { Plus, SquarePen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ButtonToggle } from "./Button.Toggle";
 import ModalHour, { ScheduleItem } from "./Modal.Hour";
+import UpdateModal from "./UpdateModal";
 
 const AUTOSTART_KEY = "autostart";
 
@@ -12,6 +13,7 @@ export default function PageConfiguration() {
   const [ativo, setAtivo] = useState(false);
   const [autostartLoading, setAutostartLoading] = useState(true);
   const [modalContainerHour, setModalContainerHour] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ScheduleItem | null>(null);
   const [schedules, setSchedules] = useState<ScheduleItem[]>([]);
 
@@ -124,6 +126,9 @@ export default function PageConfiguration() {
     } catch (err) {
       console.error("Falha ao salvar no localStorage:", err);
     }
+
+    // Notifica outros componentes da atualização de horários
+    window.dispatchEvent(new CustomEvent("schedules-updated"));
   };
 
   const handleDeleteSchedule = (id: string, e: React.MouseEvent) => {
@@ -236,7 +241,7 @@ export default function PageConfiguration() {
         <button 
           type="button"
           className="bg-white rounded-full p-4 font-semibold text-sm w-full justify-between flex flex-row cursor-pointer hover:bg-gray-50 transition-colors" 
-          onClick={() => location.reload()}
+          onClick={() => setShowUpdateModal(true)}
         >
           <h3 className="text-black">Checar atualizações</h3>
         </button>
@@ -258,6 +263,8 @@ export default function PageConfiguration() {
           onSave={handleSaveSchedule}
         />
       )}
+
+      {showUpdateModal && <UpdateModal onClose={() => setShowUpdateModal(false)} />}
     </div>
   );
 }

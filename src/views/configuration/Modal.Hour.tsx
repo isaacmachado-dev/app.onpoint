@@ -140,7 +140,8 @@ export default function ModalHour({
       console.error("Erro no localStorage:", err);
     }
 
-    // 3. Callback de sucesso para o componente pai
+    // 3. Notificar o sistema e callback de sucesso para o componente pai
+    window.dispatchEvent(new CustomEvent("schedules-updated"));
     if (onSave) {
       onSave(scheduleToSave);
     }

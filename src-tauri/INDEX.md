@@ -86,6 +86,16 @@ dpkg-deb -I src-tauri/target/release/bundle/deb/*.deb | grep Maintainer
 appstreamcli validate /usr/share/metainfo/com.moonlight.onPoint.metainfo.xml
 ```
 
+## Auto-Update (tauri-plugin-updater + GitHub Releases)
+
+**Fluxo:** `Page.Configuration.tsx:242` → "Checar atualizações" → `UpdateModal.tsx` (portal `z-[100]`) → `useUpdater.ts` → `https://github.com/isaacmachado-dev/app.onpoint/releases/latest/download/latest.json`.
+
+*   **Signing:** `npx tauri signer generate --ci -w ~/.tauri/onpoint.key` → `pubkey` em `tauri.conf.json:64` `plugins.updater.pubkey` (Ed25519, base64 minisign), `TAURI_SIGNING_PRIVATE_KEY` (conteúdo de `~/.tauri/onpoint.key`) como Secret no `build.yml:50`. `bundle.createUpdaterArtifacts:true` gera `latest.json` + `.sig` por plataforma.
+*   **Plugins:** `lib.rs:57` `updater::Builder::new().build()` + `process::init()`; `capabilities/default.json:23` `updater:default` + `process:allow-restart`.
+*   **Hook `src/hooks/useUpdater.ts:7`:** `status` (`idle|checking|up-to-date|available|downloading|ready|error`), `check()` → `downloadAndInstall(onProgress)` com eventos `Started/Progress/Finished` → `relaunch()`. Fallback `.deb` → `openUrl(RELEASES_URL)`.
+*   **Modal `src/views/configuration/UpdateModal.tsx:14`:** Auto-check no `useEffect`, estados com `lucide-react` + barra `progress%`, changelog `body`, CTA "Baixar e instalar" / "Reiniciar agora".
+*   **CI:** `tauri-action@v0` lê `TAURI_SIGNING_PRIVATE_KEY` e publica `latest.json` no Release `vX.Y.Z`.
+
 ## Build do AppImage no Arch (linuxdeploy incompatível)
 
 O `npm run tauri build` falha **apenas** no passo AppImage com `failed to run linuxdeploy`.

@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "onPoint",
   "mainBinaryName": "onPoint",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "identifier": "com.moonlight.onPoint",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -36,6 +36,7 @@
     "license": "Proprietary",
     "shortDescription": "Gerenciamento de ponto e frequencia",
     "longDescription": "onPoint - controle de jornada e frequencia com tray integrado e persistencia local.",
+    "createUpdaterArtifacts": true,
     "linux": {
       "deb": {
         "section": "utils",
@@ -58,5 +59,16 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcwNzAwQkIyQjU0QjE2MwpSV1Jqc1ZRcnV3QUhCOURpVUJTVEJGZmhCY3JLcFc5bEhONmJtcGUwK3JJZC9idUp6bDJGQVQyWQo=",
+      "endpoints": [
+        "https://github.com/isaacmachado-dev/app.onpoint/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

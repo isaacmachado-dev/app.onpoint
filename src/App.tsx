@@ -1,3 +1,4 @@
+import { hidePopupWindow } from "@/lib/windowPopup";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus } from "lucide-react";
 import "./App.css";
@@ -6,9 +7,8 @@ import Navbar from "./components/ui/navbar";
 function App() {
   const fecharJanela = async () => {
     try {
-      const appWindow = getCurrentWindow();
-      // hide() esconde a janela mas mantém o relógio rodando no sistema
-      await appWindow.hide(); 
+      // Oculta a janela e remove always on top
+      await hidePopupWindow();
     } catch (error) {
       console.error("Failed to hide window:", error);
     }

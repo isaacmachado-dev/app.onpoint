@@ -6,9 +6,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BIN="$ROOT/src-tauri/target/release/onPoint"
-DESKTOP_SRC="$ROOT/src-tauri/target/release/bundle/deb/onPoint_0.2.5_amd64/data/usr/share/applications/onPoint.desktop"
-# fallback se deb não existir (build recente sem deb)
-[ -f "$DESKTOP_SRC" ] || DESKTOP_SRC="$ROOT/src-tauri/target/release/bundle/appimage/onPoint.AppDir/usr/share/applications/onPoint.desktop"
+# Busca dinâmica do .desktop no bundle (deb/appimage), independente da versão (0.2.5, 0.2.7, 0.2.7...)
+DESKTOP_SRC="$(find "$ROOT/src-tauri/target/release/bundle" -name "onPoint.desktop" 2>/dev/null | head -n 1 || true)"
 
 if [[ "${1:-}" == "--uninstall" ]]; then
   echo "==> Removendo onPoint"
