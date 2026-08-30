@@ -1,6 +1,6 @@
 [package]
 name = "onPoint"
-version = "0.2.3"
+version = "0.2.4"
 description = "onPoint — gerenciamento de ponto e frequência com tray integrado"
 authors = ["DSOP"]
 edition = "2021"
