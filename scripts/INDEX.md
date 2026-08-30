@@ -30,7 +30,7 @@ bash scripts/install-arch.sh --uninstall
 
 - `fix-wayland-bundle.sh:18` usa `find "$BUNDLE" -name "*.desktop"` — cobre `deb/data/usr/share/applications`, `rpm` staging e `AppDir/usr/share/applications` em uma passada.
 - `build-appimage.sh:12-14` depende de `~/.cache/tauri/linuxdeploy_fixed` com `strip` do sistema (`/usr/bin/strip` binutils 2.47) e `linuxdeploy-plugin-gtk.sh` patchado para `gdk-pixbuf-2.0/2.10.0/loaders` do Arch. Sem isso, `mksquashfs` (pacote `squashfs-tools`) falha.
-- `install-arch.sh:65` instala `_source.svg` como `hicolor/scalable/apps/onPoint.svg` — garante nítidez hi-DPI; `.deb` oficial usa PNGs high-res como fallback (não inclui scalable por padrão).
+- `install-arch.sh:65` instala `_source.svg` como `hicolor/scalable/apps/onpoint.svg` — garante nítidez hi-DPI; `.deb` oficial usa PNGs high-res como fallback (não inclui scalable por padrão).
 - Todos os scripts resolvem `ROOT` via `$(cd "$(dirname "$0")/.." && pwd)` — funcionam tanto em `npm run` quanto em chamada direta.
 
 ## Dependências de SO

@@ -15,10 +15,10 @@ if [[ "${1:-}" == "--uninstall" ]]; then
   sudo rm -f /usr/bin/onPoint
   sudo rm -f /usr/share/applications/onPoint.desktop
   for s in 16x16 24x24 32x32 48x48 64x64 128x128 256x256 512x512 256x256@2; do
-    sudo rm -f "/usr/share/icons/hicolor/$s/apps/onPoint.png"
+    sudo rm -f "/usr/share/icons/hicolor/$s/apps/onpoint.png"
   done
-  sudo rm -f /usr/share/icons/hicolor/scalable/apps/onPoint.svg
-  sudo rm -f /usr/share/pixmaps/onPoint.png
+  sudo rm -f /usr/share/icons/hicolor/scalable/apps/onpoint.svg
+  sudo rm -f /usr/share/pixmaps/onpoint.png
   sudo update-desktop-database /usr/share/applications 2>/dev/null || true
   sudo gtk-update-icon-cache /usr/share/icons/hicolor 2>/dev/null || true
   echo "Removido."
@@ -55,16 +55,16 @@ fi
 echo "==> Instalando ícones (hicolor 100% + pixmaps fallback)"
 for icon in "$ROOT/src-tauri/icons/16x16.png" "$ROOT/src-tauri/icons/24x24.png" "$ROOT/src-tauri/icons/32x32.png" "$ROOT/src-tauri/icons/48x48.png" "$ROOT/src-tauri/icons/64x64.png" "$ROOT/src-tauri/icons/128x128.png" "$ROOT/src-tauri/icons/256x256.png"; do
   size=$(basename "$icon" .png)
-  sudo install -Dm644 "$icon" "/usr/share/icons/hicolor/$size/apps/onPoint.png"
+  sudo install -Dm644 "$icon" "/usr/share/icons/hicolor/$size/apps/onpoint.png"
 done
 # 512 usa icon.png (512x512) + 256@2x
-sudo install -Dm644 "$ROOT/src-tauri/icons/icon.png" /usr/share/icons/hicolor/512x512/apps/onPoint.png
-sudo install -Dm644 "$ROOT/src-tauri/icons/128x128@2x.png" /usr/share/icons/hicolor/256x256@2/apps/onPoint.png
+sudo install -Dm644 "$ROOT/src-tauri/icons/icon.png" /usr/share/icons/hicolor/512x512/apps/onpoint.png
+sudo install -Dm644 "$ROOT/src-tauri/icons/128x128@2x.png" /usr/share/icons/hicolor/256x256@2/apps/onpoint.png
 # fallback absoluto para DEs que não seguem hicolor
-sudo install -Dm644 "$ROOT/src-tauri/icons/128x128.png" /usr/share/pixmaps/onPoint.png
+sudo install -Dm644 "$ROOT/src-tauri/icons/128x128.png" /usr/share/pixmaps/onpoint.png
 # SVG escalável se existir
 if [ -f "$ROOT/src-tauri/icons/_source.svg" ]; then
-  sudo install -Dm644 "$ROOT/src-tauri/icons/_source.svg" /usr/share/icons/hicolor/scalable/apps/onPoint.svg
+  sudo install -Dm644 "$ROOT/src-tauri/icons/_source.svg" /usr/share/icons/hicolor/scalable/apps/onpoint.svg
 fi
 
 sudo update-desktop-database /usr/share/applications 2>/dev/null || true
