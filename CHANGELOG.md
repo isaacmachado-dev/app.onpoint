@@ -1,7 +1,20 @@
+## [0.3.1] - 2026-08-31
 
 ### 🚀 Features
 
 - Add RocketIcon component and integrate it into UpdateModal
+
+### 🐛 Bug Fixes
+
+- Correctly lib for deployment get work on
+
+### 📚 Documentation
+
+- Update and CHANGELOGsmd
+
+### ⚙️ Miscellaneous Tasks
+
+- Adjusting to the ci/cd work
 ## [0.3.0] - 2026-08-30
 
 ### 🚀 Features
@@ -110,7 +123,6 @@
 
 - CHANGELOG.md
 - ROADMAP.md updated
-- *(release)* V0.1.1
 
 ## [0.2.0] - 2026-08-29
 
@@ -131,6 +143,7 @@
 ## [0.1.1] - 2026-08-29
 
 ### ⚙️ Miscellaneous Tasks
+- *(release)* V0.1.1
 
 ## [0.0.1] - 2026-08-26
 
@@ -139,5 +152,3 @@
 - First commit
 - Settup mockup design
 - Navigation to change the view
-
-

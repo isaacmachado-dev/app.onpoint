@@ -14,10 +14,10 @@ O **onPoint** foi concebido para resolver o problema clássico do esquecimento d
 
 | Módulo | Versão | Status | Próximo Grande Marco |
 | :--- | :---: | :---: | :--- |
-| 🌊 **Ponto & Liquid Gauge** | `v0.2.0` | 🟢 Estável | Refinamentos, configurações e batidas de pontos |
-| 🔔 **Integrações de Sistema** | `v0.3.1` | 🟡 Em Andamento | Notificações nativas, pop-up e garantia da presença em bandejas Windows, Archlinux e Ubuntu |
-| 🏬 **Calendário & Histórico** | `v0.4.0` |  🔵 Planejado | Lojas e sistema de atualização dentro do aplicativo |
-| 📅 **Calendário & Histórico** | `v0.5.0` |  🔵 Planejado | Visualização mensal e dia atual, com possíveis recompensas e troca de pontos |
-| ☁️ **Whatsapp** | `v???` | 🟣 Ideia | Envio de aviso no whatsapp para bater o ponto no PC |
+| 🌊 **Ponto & Liquid Gauge** | `v0.2` | 🟢 Estável | Refinamentos, configurações e batidas de pontos |
+| 🔔 **Integrações de Sistema** | `v0.3` | 🟢 Estável | Notificações nativas, pop-up e garantia da presença em bandejas Windows, Archlinux e Ubuntu |
+| 🏬 **Lojas e atualizações integradas** | `v0.4` |  🟡 Em desenvolvimento | Lojas e sistema de atualização dentro do aplicativo |
+| 📅 **Calendário & Histórico** | `v0.5` |  🔵 Planejado | Visualização mensal e dia atual, com possíveis recompensas e troca de pontos |
+| ☁️ **Whatsapp** | `v???` | 🟣 Ideia | Envio de aviso no whatsapp lembrando para bater o ponto no PC |
 
 ---
