@@ -1,6 +1,6 @@
 [package]
 name = "onpoint"
-version = "0.3.0"
+version = "0.3.1"
 description = "onPoint - gerenciamento de ponto e frequencia com tray integrado"
 authors = ["Isaac Machado <contato@isaacmachado.com.br>"]
 license = "Proprietary"
