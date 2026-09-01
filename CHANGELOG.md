@@ -71,7 +71,7 @@
 
 ### 📚 Documentation
 
-- *(scripts)* Add INDEX.md for build/wayland/install scripts
+- *(scripts)* Add README.md for build/wayland/install scripts
 - *(tray)* Document RGBA requirement for bundle icons (tray-icon v0.24 panic)
 
 ### ⚙️ Miscellaneous Tasks

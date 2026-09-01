@@ -16,7 +16,7 @@ APPDIR="$(pwd)/src-tauri/target/release/bundle/appimage/onPoint.AppDir"
 
 if [ ! -x "$FIXED" ]; then
   echo "ERRO: linuxdeploy corrigido nao encontrado em $FIXED"
-  echo "Veja INDEX.md (secao de build AppImage) para recriar o linuxdeploy_fixed."
+  echo "Veja README.md (secao de build AppImage) para recriar o linuxdeploy_fixed."
   exit 1
 fi
 

@@ -13,7 +13,7 @@ src/views/point/
 ├── PointWidget.tsx        # Widget central (Liquid Gauge, Botão Bater Ponto, Folga ou Concluído)
 ├── usePointProgress.ts    # Custom Hook com relógio 24h, cálculo de progresso e persistência
 ├── confetti.ts            # Motor de micro-partículas e celebração com estrelas douradas
-└── INDEX.md               # Documentação técnica detalhada do módulo
+└── README.md               # Documentação técnica detalhada do módulo
 ```
 
 ---

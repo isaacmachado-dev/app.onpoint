@@ -16,7 +16,7 @@ src/views/configuration/
 ├── Modal.HourPicker.tsx   # Seletor de relógio 24h integrado com timepicker-ui-react
 ├── UpdateModal.tsx        # Modal de auto-update (updater + portal z-[100])
 ├── Page.Configuration.tsx # View principal de listagem e gerenciamento de escalas
-└── INDEX.md               # Documentação técnica do módulo
+└── README.md               # Documentação técnica do módulo
 ```
 
 ---

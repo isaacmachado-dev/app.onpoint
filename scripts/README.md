@@ -19,7 +19,7 @@ npm run tauri:build              # -> deb+rpm + fix-wayland-bundle.sh
 npm run tauri:build:wayland      # alias idem (sem XWayland)
 
 # AppImage no Arch (linuxdeploy fix)
-bash scripts/build-appimage.sh   # requer linuxdeploy_fixed (ver src-tauri/INDEX.md)
+bash scripts/build-appimage.sh   # requer linuxdeploy_fixed (ver src-tauri/README.md)
 
 # Instalar localmente (Hyprland/GNOME/KDE)
 bash scripts/install-arch.sh

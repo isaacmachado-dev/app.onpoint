@@ -9,7 +9,7 @@ Este módulo é responsável por fornecer ao usuário uma visão consolidada e h
 ```
 src/views/calendar/
 ├── Page.Calendar.tsx      # View principal do calendário mensal
-└── INDEX.md               # Documentação técnica e roadmap do módulo
+└── README.md               # Documentação técnica e roadmap do módulo
 ```
 
 ---

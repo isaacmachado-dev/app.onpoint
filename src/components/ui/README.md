@@ -14,7 +14,7 @@ src/components/ui/
 ├── button.tsx      # Botão genérico com variantes CVA
 ├── popover.tsx     # Popover baseado em @base-ui/react com z-index elevado (z-[120])
 ├── badge.tsx       # Badges estilizadas para status e turnos
-└── INDEX.md        # Documentação técnica do módulo UI
+└── README.md        # Documentação técnica do módulo UI
 ```
 
 ---

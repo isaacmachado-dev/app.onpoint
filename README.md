@@ -122,13 +122,13 @@ app.onPoint/
 
 ## Documentação Técnica por Módulo
 
-> Toda pasta possui um INDEX.md para melhor entendimento de toda a aplicação.
+> Toda pasta possui um README.md para melhor entendimento de toda a aplicação.
 
 - 🗺️ **[Roadmap do Projeto (`ROADMAP.md`)](ROADMAP.md)**: Planejamento estratégico, fases de desenvolvimento e visão de futuro.
-- 🌊 **[Módulo de Ponto (`src/views/point/INDEX.md`)](src/views/point/INDEX.md)**: Fórmulas de subida da água, celebrações e ciclo de vida das batidas.
-- ⚙️ **[Módulo de Configuração (`src/views/configuration/INDEX.md`)](src/views/configuration/INDEX.md)**: Arquitetura de modais, portais, `z-index` e conversões de horário.
-- 📅 **[Módulo de Calendário (`src/views/calendar/INDEX.md`)](src/views/calendar/INDEX.md)**: Futuramente será desenvolvido.
-- 🎨 **[Componentes Compartilhados (`src/components/ui/INDEX.md`)](src/components/ui/INDEX.md)**: Catálogo detalhado de componentes, animações e props.
+- 🌊 **[Módulo de Ponto (`src/views/point/README.md`)](src/views/point/README.md)**: Fórmulas de subida da água, celebrações e ciclo de vida das batidas.
+- ⚙️ **[Módulo de Configuração (`src/views/configuration/README.md`)](src/views/configuration/README.md)**: Arquitetura de modais, portais, `z-index` e conversões de horário.
+- 📅 **[Módulo de Calendário (`src/views/calendar/README.md`)](src/views/calendar/README.md)**: Futuramente será desenvolvido.
+- 🎨 **[Componentes Compartilhados (`src/components/ui/README.md`)](src/components/ui/README.md)**: Catálogo detalhado de componentes, animações e props.
 - 📐 **[Design System (`docs/DESIGN.md`)](docs/DESIGN.md)**: Tokens visuais, paleta de cores e tipografia.
 - 📋 **[Especificação Técnica (`docs/SPEC.md`)](docs/SPEC.md)**: Decisões arquiteturais e escopo de entrega.
 
